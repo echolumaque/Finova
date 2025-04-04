@@ -1,0 +1,753 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		50A94D8EB285C66A04DD2F30 /* Pods_FinovaTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4C5C82B8F593CF2E857B56E /* Pods_FinovaTests.framework */; };
+		6FCE6E23C7C0771AE0C13F2B /* Pods_Finova_FinovaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 68B921FE740FD20A8676759E /* Pods_Finova_FinovaUITests.framework */; };
+		773ADE19C68CE8E97E006A40 /* Pods_Finova.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36B99D30B387158C4D86D88B /* Pods_Finova.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		46F9EFF22DA04410007E4A11 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 46F9EFD02DA0440F007E4A11 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 46F9EFD72DA0440F007E4A11;
+			remoteInfo = Finova;
+		};
+		46F9EFFC2DA04411007E4A11 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 46F9EFD02DA0440F007E4A11 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 46F9EFD72DA0440F007E4A11;
+			remoteInfo = Finova;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0BCF393798D00EC82ABC4CC3 /* Pods-Finova.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finova.debug.xcconfig"; path = "Target Support Files/Pods-Finova/Pods-Finova.debug.xcconfig"; sourceTree = "<group>"; };
+		17EA3934E4F576F7A8DA4EEF /* Pods-FinovaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FinovaTests.debug.xcconfig"; path = "Target Support Files/Pods-FinovaTests/Pods-FinovaTests.debug.xcconfig"; sourceTree = "<group>"; };
+		36B99D30B387158C4D86D88B /* Pods_Finova.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Finova.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E3BFACE299DF79503D82B50 /* Pods-Finova-FinovaUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finova-FinovaUITests.release.xcconfig"; path = "Target Support Files/Pods-Finova-FinovaUITests/Pods-Finova-FinovaUITests.release.xcconfig"; sourceTree = "<group>"; };
+		46F9EFD82DA0440F007E4A11 /* Finova.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Finova.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		46F9EFF12DA04410007E4A11 /* FinovaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinovaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		46F9EFFB2DA04411007E4A11 /* FinovaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FinovaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D20467E09AAE5568CB1CB44 /* Pods-Finova-FinovaUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finova-FinovaUITests.debug.xcconfig"; path = "Target Support Files/Pods-Finova-FinovaUITests/Pods-Finova-FinovaUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		68B921FE740FD20A8676759E /* Pods_Finova_FinovaUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Finova_FinovaUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		85633384CE4601DCF0C57ECC /* Pods-FinovaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FinovaTests.release.xcconfig"; path = "Target Support Files/Pods-FinovaTests/Pods-FinovaTests.release.xcconfig"; sourceTree = "<group>"; };
+		D2346CD12D91EB92B3E9EC25 /* Pods-Finova.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Finova.release.xcconfig"; path = "Target Support Files/Pods-Finova/Pods-Finova.release.xcconfig"; sourceTree = "<group>"; };
+		E4C5C82B8F593CF2E857B56E /* Pods_FinovaTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FinovaTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		46F9F0032DA04411007E4A11 /* Exceptions for "Finova" folder in "Finova" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 46F9EFD72DA0440F007E4A11 /* Finova */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		46F9EFDA2DA0440F007E4A11 /* Finova */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				46F9F0032DA04411007E4A11 /* Exceptions for "Finova" folder in "Finova" target */,
+			);
+			path = Finova;
+			sourceTree = "<group>";
+		};
+		46F9EFF42DA04410007E4A11 /* FinovaTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FinovaTests;
+			sourceTree = "<group>";
+		};
+		46F9EFFE2DA04411007E4A11 /* FinovaUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FinovaUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		46F9EFD52DA0440F007E4A11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				773ADE19C68CE8E97E006A40 /* Pods_Finova.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46F9EFEE2DA04410007E4A11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				50A94D8EB285C66A04DD2F30 /* Pods_FinovaTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46F9EFF82DA04411007E4A11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6FCE6E23C7C0771AE0C13F2B /* Pods_Finova_FinovaUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		46F9EFCF2DA0440F007E4A11 = {
+			isa = PBXGroup;
+			children = (
+				46F9EFDA2DA0440F007E4A11 /* Finova */,
+				46F9EFF42DA04410007E4A11 /* FinovaTests */,
+				46F9EFFE2DA04411007E4A11 /* FinovaUITests */,
+				46F9EFD92DA0440F007E4A11 /* Products */,
+				6CE31ED9C83D038E84C5F4E7 /* Pods */,
+				728BE05CCEB8729D45E54EBC /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		46F9EFD92DA0440F007E4A11 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				46F9EFD82DA0440F007E4A11 /* Finova.app */,
+				46F9EFF12DA04410007E4A11 /* FinovaTests.xctest */,
+				46F9EFFB2DA04411007E4A11 /* FinovaUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6CE31ED9C83D038E84C5F4E7 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0BCF393798D00EC82ABC4CC3 /* Pods-Finova.debug.xcconfig */,
+				D2346CD12D91EB92B3E9EC25 /* Pods-Finova.release.xcconfig */,
+				4D20467E09AAE5568CB1CB44 /* Pods-Finova-FinovaUITests.debug.xcconfig */,
+				3E3BFACE299DF79503D82B50 /* Pods-Finova-FinovaUITests.release.xcconfig */,
+				17EA3934E4F576F7A8DA4EEF /* Pods-FinovaTests.debug.xcconfig */,
+				85633384CE4601DCF0C57ECC /* Pods-FinovaTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		728BE05CCEB8729D45E54EBC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				36B99D30B387158C4D86D88B /* Pods_Finova.framework */,
+				68B921FE740FD20A8676759E /* Pods_Finova_FinovaUITests.framework */,
+				E4C5C82B8F593CF2E857B56E /* Pods_FinovaTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		46F9EFD72DA0440F007E4A11 /* Finova */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 46F9F0042DA04411007E4A11 /* Build configuration list for PBXNativeTarget "Finova" */;
+			buildPhases = (
+				37AA8C3C4676EBEB7BEC244E /* [CP] Check Pods Manifest.lock */,
+				46F9EFD42DA0440F007E4A11 /* Sources */,
+				46F9EFD52DA0440F007E4A11 /* Frameworks */,
+				46F9EFD62DA0440F007E4A11 /* Resources */,
+				E1D2EB875F4D35A4906F86CD /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				46F9EFDA2DA0440F007E4A11 /* Finova */,
+			);
+			name = Finova;
+			productName = Finova;
+			productReference = 46F9EFD82DA0440F007E4A11 /* Finova.app */;
+			productType = "com.apple.product-type.application";
+		};
+		46F9EFF02DA04410007E4A11 /* FinovaTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 46F9F0092DA04411007E4A11 /* Build configuration list for PBXNativeTarget "FinovaTests" */;
+			buildPhases = (
+				D68B2CC3FEEE28B328DAE2EB /* [CP] Check Pods Manifest.lock */,
+				46F9EFED2DA04410007E4A11 /* Sources */,
+				46F9EFEE2DA04410007E4A11 /* Frameworks */,
+				46F9EFEF2DA04410007E4A11 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				46F9EFF32DA04410007E4A11 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				46F9EFF42DA04410007E4A11 /* FinovaTests */,
+			);
+			name = FinovaTests;
+			productName = FinovaTests;
+			productReference = 46F9EFF12DA04410007E4A11 /* FinovaTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		46F9EFFA2DA04411007E4A11 /* FinovaUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 46F9F00C2DA04411007E4A11 /* Build configuration list for PBXNativeTarget "FinovaUITests" */;
+			buildPhases = (
+				D975DA2E78A85A61B71D0FB3 /* [CP] Check Pods Manifest.lock */,
+				46F9EFF72DA04411007E4A11 /* Sources */,
+				46F9EFF82DA04411007E4A11 /* Frameworks */,
+				46F9EFF92DA04411007E4A11 /* Resources */,
+				0A95265FD0CE70878E12DF25 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				46F9EFFD2DA04411007E4A11 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				46F9EFFE2DA04411007E4A11 /* FinovaUITests */,
+			);
+			name = FinovaUITests;
+			productName = FinovaUITests;
+			productReference = 46F9EFFB2DA04411007E4A11 /* FinovaUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		46F9EFD02DA0440F007E4A11 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					46F9EFD72DA0440F007E4A11 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					46F9EFF02DA04410007E4A11 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 46F9EFD72DA0440F007E4A11;
+					};
+					46F9EFFA2DA04411007E4A11 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 46F9EFD72DA0440F007E4A11;
+					};
+				};
+			};
+			buildConfigurationList = 46F9EFD32DA0440F007E4A11 /* Build configuration list for PBXProject "Finova" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 46F9EFCF2DA0440F007E4A11;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 46F9EFD92DA0440F007E4A11 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				46F9EFD72DA0440F007E4A11 /* Finova */,
+				46F9EFF02DA04410007E4A11 /* FinovaTests */,
+				46F9EFFA2DA04411007E4A11 /* FinovaUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		46F9EFD62DA0440F007E4A11 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46F9EFEF2DA04410007E4A11 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46F9EFF92DA04411007E4A11 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0A95265FD0CE70878E12DF25 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Finova-FinovaUITests/Pods-Finova-FinovaUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Finova-FinovaUITests/Pods-Finova-FinovaUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Finova-FinovaUITests/Pods-Finova-FinovaUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		37AA8C3C4676EBEB7BEC244E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Finova-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D68B2CC3FEEE28B328DAE2EB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FinovaTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D975DA2E78A85A61B71D0FB3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Finova-FinovaUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E1D2EB875F4D35A4906F86CD /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Finova/Pods-Finova-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Finova/Pods-Finova-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Finova/Pods-Finova-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		46F9EFD42DA0440F007E4A11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46F9EFED2DA04410007E4A11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46F9EFF72DA04411007E4A11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		46F9EFF32DA04410007E4A11 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 46F9EFD72DA0440F007E4A11 /* Finova */;
+			targetProxy = 46F9EFF22DA04410007E4A11 /* PBXContainerItemProxy */;
+		};
+		46F9EFFD2DA04411007E4A11 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 46F9EFD72DA0440F007E4A11 /* Finova */;
+			targetProxy = 46F9EFFC2DA04411007E4A11 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		46F9F0052DA04411007E4A11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0BCF393798D00EC82ABC4CC3 /* Pods-Finova.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CFKFBBWYX6;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Finova/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Finova;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.mobinova.Finova;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		46F9F0062DA04411007E4A11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D2346CD12D91EB92B3E9EC25 /* Pods-Finova.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CFKFBBWYX6;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Finova/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Finova;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.mobinova.Finova;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		46F9F0072DA04411007E4A11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		46F9F0082DA04411007E4A11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		46F9F00A2DA04411007E4A11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 17EA3934E4F576F7A8DA4EEF /* Pods-FinovaTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CFKFBBWYX6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.mobinova.FinovaTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Finova.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Finova";
+			};
+			name = Debug;
+		};
+		46F9F00B2DA04411007E4A11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 85633384CE4601DCF0C57ECC /* Pods-FinovaTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CFKFBBWYX6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.mobinova.FinovaTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Finova.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Finova";
+			};
+			name = Release;
+		};
+		46F9F00D2DA04411007E4A11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4D20467E09AAE5568CB1CB44 /* Pods-Finova-FinovaUITests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CFKFBBWYX6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.mobinova.FinovaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Finova;
+			};
+			name = Debug;
+		};
+		46F9F00E2DA04411007E4A11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3E3BFACE299DF79503D82B50 /* Pods-Finova-FinovaUITests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CFKFBBWYX6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.mobinova.FinovaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Finova;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		46F9EFD32DA0440F007E4A11 /* Build configuration list for PBXProject "Finova" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46F9F0072DA04411007E4A11 /* Debug */,
+				46F9F0082DA04411007E4A11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		46F9F0042DA04411007E4A11 /* Build configuration list for PBXNativeTarget "Finova" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46F9F0052DA04411007E4A11 /* Debug */,
+				46F9F0062DA04411007E4A11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		46F9F0092DA04411007E4A11 /* Build configuration list for PBXNativeTarget "FinovaTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46F9F00A2DA04411007E4A11 /* Debug */,
+				46F9F00B2DA04411007E4A11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		46F9F00C2DA04411007E4A11 /* Build configuration list for PBXNativeTarget "FinovaUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46F9F00D2DA04411007E4A11 /* Debug */,
+				46F9F00E2DA04411007E4A11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 46F9EFD02DA0440F007E4A11 /* Project object */;
+}

@@ -1,0 +1,6 @@
+framework module Pods_Finova_FinovaUITests {
+  umbrella header "Pods-Finova-FinovaUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
