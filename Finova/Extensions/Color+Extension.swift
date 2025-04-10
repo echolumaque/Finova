@@ -37,6 +37,8 @@ extension UIColor {
 
         return UIColor(red: red, green: green, blue: blue, alpha: newAlpha)
     }
+    
+    static let primaryColor = UIColor(rgb: 0x111184)
 }
 
 extension Color {

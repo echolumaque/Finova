@@ -18,7 +18,14 @@ class HomeViewController: UIViewController, HomeView {
     private let horizontalPadding: CGFloat = 16
     private let verticalPadding: CGFloat = 8
     
-    private var profilePicture = UIImageView()
+    private var accountsCollectionView = UICollectionView(
+        frame: .zero,
+        collectionViewLayout: UICollectionViewLayoutHelper.createHorizontalCompositionalLayout(
+            itemSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(150)),
+            groupSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(150)),
+            interGroupSpacing: 8
+        )
+    )
     
     init(container: Resolver) {
         self.container = container
@@ -33,25 +40,11 @@ class HomeViewController: UIViewController, HomeView {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
-        configureAccount()
+        configureAccounts()
     }
     
-    private func configureAccount() {
-        profilePicture.translatesAutoresizingMaskIntoConstraints = false
-        profilePicture.clipsToBounds = true
-        profilePicture.layer.cornerRadius = 45 / 2
-        profilePicture.layer.borderColor = UIColor(rgb: 0x111184).cgColor
-        profilePicture.layer.borderWidth = 2
-        profilePicture.image = UIImage(systemName: "person.fill")?.withRenderingMode(.alwaysTemplate)
-        profilePicture.tintColor = UIColor(rgb: 0x111184)
-        
-        view.addSubview(profilePicture)
-        NSLayoutConstraint.activate([
-            profilePicture.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: verticalPadding),
-            profilePicture.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: horizontalPadding),
-            profilePicture.widthAnchor.constraint(equalToConstant: 45),
-            profilePicture.heightAnchor.constraint(equalToConstant: 45)
-        ])
+    private func configureAccounts() {
+       
     }
 }
 
