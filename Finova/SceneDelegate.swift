@@ -19,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let container = Container()
         _ = Assembler(
             [
+                ServicesAssembly(),
                 MainTabAssembly(),
                 HomeAssembly(),
                 StatisticsAssembly()

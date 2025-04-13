@@ -7,6 +7,8 @@ target 'Finova' do
 
   # Pods for Finova
 pod 'Swinject'
+pod 'RxSwift'
+pod 'RxCocoa'
 
   target 'FinovaTests' do
     inherit! :search_paths

@@ -10,11 +10,19 @@ import UIKit
 class AccountCell: UICollectionViewCell {
     private let horizontalPadding: CGFloat = 20
     private let verticalPadding: CGFloat = 8
+    override var isSelected: Bool {
+        didSet { cardView.backgroundColor = isSelected ? UIColor.primaryColor : UIColor.secondaryColor }
+    }
     
+    private let cardView = UIView()
     private let accountNameLabel = DynamicLabel(
         textColor: .white,
         font: UIFont.preferredFont(for: .title3, weight: .semibold),
         numberOfLines: 1
+    )
+    let accountBalanceLabel = DynamicLabel(
+        textColor: .white,
+        font: UIFont.preferredFont(for: .footnote, weight: .regular)
     )
     private let accountValueLabel = DynamicLabel(
         textColor: .white,
@@ -31,14 +39,14 @@ class AccountCell: UICollectionViewCell {
         fatalError()
     }
     
-    func set() {
-        
+    func set(account: Account) {
+        accountNameLabel.text = account.name ?? ""
+        accountValueLabel.text = "$\(account.value)"
     }
     
     private func configure() {
-        let cardView = UIView()
+        cardView.backgroundColor = UIColor.secondaryColor
         cardView.translatesAutoresizingMaskIntoConstraints = false
-        cardView.backgroundColor = UIColor.primaryColor
         cardView.layer.cornerRadius = 10.0
         cardView.clipsToBounds = true
         
@@ -63,10 +71,6 @@ class AccountCell: UICollectionViewCell {
             accountNameLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -horizontalPadding),
         ])
         
-        let accountBalanceLabel = DynamicLabel(
-            textColor: .white,
-            font: UIFont.preferredFont(for: .footnote, weight: .regular)
-        )
         accountBalanceLabel.text = "Current Balance"
         cardView.addSubview(accountBalanceLabel)
         NSLayoutConstraint.activate([

@@ -39,6 +39,8 @@ extension UIColor {
     }
     
     static let primaryColor = UIColor(rgb: 0x111184)
+    static let secondaryColor = UIColor(rgb: 0x1863AD)
+    static let accentColor = UIColor(rgb: 0x021A52)
 }
 
 extension Color {

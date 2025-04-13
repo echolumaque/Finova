@@ -12,7 +12,7 @@ class HomeAssembly: Assembly {
     func assemble(container: Container) {
         container.register(HomeRouter.self) { resolver in
             let view = HomeViewController(container: resolver)
-            let interactor = HomeInteractorImpl()
+            let interactor = HomeInteractorImpl(accountService: resolver.resolve(AccountService.self)!)
             let presenter = HomePresenterImpl()
             let router = HomeRouterImpl(container: resolver)
             
