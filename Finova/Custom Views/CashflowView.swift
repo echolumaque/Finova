@@ -26,50 +26,60 @@ class CashflowView: UIView {
 
     private func configure(cashflowType: CashflowType) {
         translatesAutoresizingMaskIntoConstraints = false
-        layer.cornerRadius = 60
+        layer.cornerRadius = 20
         clipsToBounds = true
         backgroundColor = cashflowType.color
 
         let hStack = UIStackView()
         hStack.axis = .horizontal
-        hStack.spacing = 30
-        hStack.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        hStack.spacing = 15
+//        hStack.alignment = .center
+        hStack.layoutMargins = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         hStack.isLayoutMarginsRelativeArrangement = true
         hStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hStack)
         NSLayoutConstraint.activate([
-            hStack.topAnchor.constraint(equalTo: self.topAnchor, constant: verticalPadding),
-            hStack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: horizontalPadding),
-            hStack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -horizontalPadding),
-            hStack.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -verticalPadding)
+            hStack.topAnchor.constraint(equalTo: topAnchor, constant: verticalPadding),
+            hStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: horizontalPadding),
+            hStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -horizontalPadding),
+            hStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -verticalPadding)
         ])
         
         let cashflowImage = UIImageView(image: cashflowType.imageToUse)
         cashflowImage.contentMode = .scaleAspectFit
-        cashflowImage.layer.cornerRadius = 15
+        cashflowImage.layer.cornerRadius = 10
         cashflowImage.layer.masksToBounds = true
         cashflowImage.layer.backgroundColor = UIColor.white.cgColor
         cashflowImage.tintColor = cashflowType.color
         cashflowImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            cashflowImage.widthAnchor.constraint(equalToConstant: 70),
-            cashflowImage.heightAnchor.constraint(equalToConstant: 70),
+            cashflowImage.widthAnchor.constraint(equalToConstant: 50),
+            cashflowImage.heightAnchor.constraint(equalToConstant: 50),
         ])
-        hStack.addArrangedSubview(cashflowImage)
         
         let vStack = UIStackView()
         vStack.axis = .vertical
         vStack.distribution = .fillEqually
         vStack.spacing = -5
-        hStack.addArrangedSubview(vStack)
         
-        let cashflowName = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .title2, weight: .semibold))
+        let cashflowName = DynamicLabel(
+            textColor: .white,
+            font: UIFont.preferredFont(for: .callout, weight: .bold),
+            minimumScaleFactor: 0.75,
+            numberOfLines: 1
+        )
         cashflowName.text = cashflowType.rawValue
-        vStack.addArrangedSubview(cashflowName)
         
-        let value = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .extraLargeTitle, weight: .bold))
-        value.text = "$5000"
-        vStack.addArrangedSubview(value)
+        let value = DynamicLabel(
+            textColor: .white,
+            font: UIFont.preferredFont(for: .title1, weight: .bold),
+            minimumScaleFactor: 0.75,
+            numberOfLines: 1
+        )
+        value.text = "$500.23"
+        
+        hStack.addArrangedSubviews(cashflowImage, vStack)
+        vStack.addArrangedSubviews(cashflowName, value)
     }
 }
 

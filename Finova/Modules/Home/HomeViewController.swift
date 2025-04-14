@@ -19,15 +19,7 @@ class HomeViewController: UIViewController, HomeView {
     private let horizontalPadding: CGFloat = 16
     private let verticalPadding: CGFloat = 8
     
-    private let accountsLabel = DynamicLabel(textColor: .label, font: UIFont.preferredFont(for: .title2, weight: .bold))
-    private var accountsDataSource: UICollectionViewDiffableDataSource<Section, Account>!
-    private lazy var accountsCollectionView = UICollectionView(
-        frame: .zero,
-        collectionViewLayout: UICollectionViewLayoutHelper.createHorizontalCompositionalLayout(
-            size: NSCollectionLayoutSize(widthDimension: .estimated(180), heightDimension: .estimated(150)),
-            interGroupSpacing: horizontalPadding
-        )
-    )
+    private let accountStackView = UIStackView(frame: .zero)
     
     init(container: Resolver) {
         self.container = container
@@ -42,9 +34,8 @@ class HomeViewController: UIViewController, HomeView {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
-        configureAccountsLabel()
-        configureAccounts()
-        configureIncomeExpenses()
+        configureAccount()
+        configureCashflowBadges()
         
         Task { [weak self] in
             guard let self else { return }
@@ -52,48 +43,102 @@ class HomeViewController: UIViewController, HomeView {
         }
     }
     
-    private func configureAccountsLabel() {
-        accountsLabel.text = "Available Accounts"
-        view.addSubview(accountsLabel)
+    private func configureAccount() {
+        accountStackView.backgroundColor = UIColor.primaryColor
+        accountStackView.axis = .vertical
+        accountStackView.alignment = .center
+        accountStackView.spacing = 20
+        
+        accountStackView.layoutMargins = UIEdgeInsets(top: 5, left: 20, bottom: 5, right: 20)
+        accountStackView.isLayoutMarginsRelativeArrangement = true
+        
+//        accountStackView.clipsToBounds = true
+//        accountStackView.layer.cornerRadius = 35
+//        accountStackView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+
+        accountStackView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(accountStackView)
         NSLayoutConstraint.activate([
-            accountsLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: verticalPadding),
-            accountsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: horizontalPadding),
-            accountsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -horizontalPadding)
-        ])
-    }
-    
-    private func configureAccounts() {
-        accountsCollectionView.delegate = self
-        accountsCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(accountsCollectionView)
-        NSLayoutConstraint.activate([
-            accountsCollectionView.topAnchor.constraint(equalTo: accountsLabel.bottomAnchor, constant: verticalPadding),
-            accountsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: horizontalPadding),
-            accountsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -horizontalPadding),
-            accountsCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            accountStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            accountStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            accountStackView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1 / 3)
         ])
         
-        let accountCell = UICollectionView.CellRegistration<AccountCell, Account> { cell, indexPath, account in
-            cell.set(account: account)
-        }
-        accountsDataSource = UICollectionViewDiffableDataSource(collectionView: accountsCollectionView) { collectionView, indexPath, item in
-            return collectionView.dequeueConfiguredReusableCell(using: accountCell, for: indexPath, item: item)
-        }
-    }
-    
-    private func configureIncomeExpenses() {
+        let accountBtn = UIButton(configuration: .tinted())
+        accountBtn.setTitle("Select Account", for: .normal)
+        accountBtn.setTitleColor(.white, for: .normal)
+        accountBtn.backgroundColor = UIColor.primaryColor
+        accountBtn.layer.cornerRadius = 20
+        accountBtn.clipsToBounds = true
+        accountBtn.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            accountBtn.widthAnchor.constraint(equalToConstant: 150),
+            accountBtn.heightAnchor.constraint(equalToConstant: 40),
+        ])
         
+        let option1 = UIAction(title: "Account 1") { _ in
+            print("Option 1 selected")
+        }
+        let option2 = UIAction(title: "Account 2") { _ in
+            print("Option 2 selected")
+        }
+        
+        let menu = UIMenu(options: .singleSelection, children: [option1, option2])
+        accountBtn.menu = menu
+        accountBtn.showsMenuAsPrimaryAction = true
+        
+        let accountBalanceAndName = UIView(frame: .zero)
+        
+        let accountBalance = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .extraLargeTitle, weight: .bold))
+        accountBalance.text = "$5,000.00"
+        accountBalanceAndName.addSubview(accountBalance)
+        NSLayoutConstraint.activate([
+            accountBalance.topAnchor.constraint(equalTo: accountBalanceAndName.topAnchor, constant: verticalPadding),
+            accountBalance.centerXAnchor.constraint(equalTo: accountBalanceAndName.centerXAnchor)
+        ])
+        
+        let accountName = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .title2, weight: .semibold))
+        accountName.text = "Savings"
+        accountBalanceAndName.addSubview(accountName)
+        NSLayoutConstraint.activate([
+            accountName.topAnchor.constraint(equalTo: accountBalance.bottomAnchor, constant: verticalPadding),
+            accountName.centerXAnchor.constraint(equalTo: accountBalanceAndName.centerXAnchor)
+        ])
+        
+        accountStackView.addArrangedSubviews(accountBtn, accountBalanceAndName)
     }
     
-    func updateAccounts(_ accounts: [Account])  {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Account>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(accounts)
-        DispatchQueue.main.async {
-            self.accountsDataSource.apply(snapshot, animatingDifferences: true) {
-                self.accountsCollectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: false, scrollPosition: [])
-            }
-        }
+    private func configureCashflowBadges() {
+        let cashflowStackView = UIStackView(frame: .zero)
+        cashflowStackView.backgroundColor = .systemBackground
+        cashflowStackView.axis = .horizontal
+        cashflowStackView.alignment = .center
+        cashflowStackView.distribution = .fillEqually
+        cashflowStackView.spacing = 15
+        
+        cashflowStackView.layoutMargins = UIEdgeInsets(top: 28, left: 20, bottom: 5, right: 28)
+        cashflowStackView.isLayoutMarginsRelativeArrangement = true
+        
+        cashflowStackView.clipsToBounds = true
+        cashflowStackView.layer.cornerRadius = 35
+        cashflowStackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+
+        cashflowStackView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(cashflowStackView)
+        NSLayoutConstraint.activate([
+            cashflowStackView.topAnchor.constraint(equalTo: accountStackView.bottomAnchor, constant: -35),
+            cashflowStackView.leadingAnchor.constraint(equalTo: accountStackView.leadingAnchor),
+            cashflowStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        
+        let incomeCashflow = CashflowView(cashflowType: .income)
+        let expensesCashflow = CashflowView(cashflowType: .expense)
+        
+        cashflowStackView.addArrangedSubviews(incomeCashflow, expensesCashflow)
+    }
+    
+    func updateAccounts(_ accounts: [Account]) {
+        
     }
 }
 

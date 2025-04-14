@@ -17,7 +17,7 @@ class HomeAssembly: Assembly {
             let router = HomeRouterImpl(container: resolver)
             
             view.presenter = presenter
-            view.navigationItem.title = "Home"
+//            view.navigationItem.title = "Home"
             view.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house.fill"), tag: 0)
             
             interactor.presenter = presenter
