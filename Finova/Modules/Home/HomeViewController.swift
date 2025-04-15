@@ -49,19 +49,19 @@ class HomeViewController: UIViewController, HomeView {
         accountStackView.alignment = .center
         accountStackView.spacing = 20
         
-        accountStackView.layoutMargins = UIEdgeInsets(top: 5, left: 20, bottom: 5, right: 20)
+        accountStackView.layoutMargins = UIEdgeInsets(top: 35, left: 20, bottom: 35, right: 20)
         accountStackView.isLayoutMarginsRelativeArrangement = true
         
-//        accountStackView.clipsToBounds = true
-//        accountStackView.layer.cornerRadius = 35
+        accountStackView.clipsToBounds = true
+        accountStackView.layer.cornerRadius = 30
 //        accountStackView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
 
         accountStackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(accountStackView)
         NSLayoutConstraint.activate([
-            accountStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            accountStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            accountStackView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1 / 3)
+            accountStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: verticalPadding),
+            accountStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: horizontalPadding),
+            accountStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -horizontalPadding)
         ])
         
         let accountBtn = UIButton(configuration: .tinted())
@@ -70,11 +70,6 @@ class HomeViewController: UIViewController, HomeView {
         accountBtn.backgroundColor = UIColor.primaryColor
         accountBtn.layer.cornerRadius = 20
         accountBtn.clipsToBounds = true
-        accountBtn.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            accountBtn.widthAnchor.constraint(equalToConstant: 150),
-            accountBtn.heightAnchor.constraint(equalToConstant: 40),
-        ])
         
         let option1 = UIAction(title: "Account 1") { _ in
             print("Option 1 selected")
@@ -89,20 +84,21 @@ class HomeViewController: UIViewController, HomeView {
         
         let accountBalanceAndName = UIView(frame: .zero)
         
+        let accountName = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .title3, weight: .semibold))
+        accountName.text = "Available Balance"
+        accountBalanceAndName.addSubview(accountName)
+        NSLayoutConstraint.activate([
+            accountName.topAnchor.constraint(equalTo: accountBalanceAndName.topAnchor),
+            accountName.centerXAnchor.constraint(equalTo: accountBalanceAndName.centerXAnchor)
+        ])
+        
         let accountBalance = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .extraLargeTitle, weight: .bold))
         accountBalance.text = "$5,000.00"
         accountBalanceAndName.addSubview(accountBalance)
         NSLayoutConstraint.activate([
-            accountBalance.topAnchor.constraint(equalTo: accountBalanceAndName.topAnchor, constant: verticalPadding),
-            accountBalance.centerXAnchor.constraint(equalTo: accountBalanceAndName.centerXAnchor)
-        ])
-        
-        let accountName = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .title2, weight: .semibold))
-        accountName.text = "Savings"
-        accountBalanceAndName.addSubview(accountName)
-        NSLayoutConstraint.activate([
-            accountName.topAnchor.constraint(equalTo: accountBalance.bottomAnchor, constant: verticalPadding),
-            accountName.centerXAnchor.constraint(equalTo: accountBalanceAndName.centerXAnchor)
+            accountBalance.topAnchor.constraint(equalTo: accountName.bottomAnchor, constant: verticalPadding),
+            accountBalance.centerXAnchor.constraint(equalTo: accountBalanceAndName.centerXAnchor),
+            accountBalance.bottomAnchor.constraint(equalTo: accountBalanceAndName.bottomAnchor)
         ])
         
         accountStackView.addArrangedSubviews(accountBtn, accountBalanceAndName)
@@ -114,27 +110,38 @@ class HomeViewController: UIViewController, HomeView {
         cashflowStackView.axis = .horizontal
         cashflowStackView.alignment = .center
         cashflowStackView.distribution = .fillEqually
-        cashflowStackView.spacing = 15
+        cashflowStackView.spacing = horizontalPadding
         
-        cashflowStackView.layoutMargins = UIEdgeInsets(top: 28, left: 20, bottom: 5, right: 28)
-        cashflowStackView.isLayoutMarginsRelativeArrangement = true
+//        cashflowStackView.layoutMargins = UIEdgeInsets(top: 28, left: 20, bottom: 5, right: 28)
+//        cashflowStackView.isLayoutMarginsRelativeArrangement = true
         
-        cashflowStackView.clipsToBounds = true
-        cashflowStackView.layer.cornerRadius = 35
-        cashflowStackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+//        cashflowStackView.clipsToBounds = true
+//        cashflowStackView.layer.cornerRadius = 35
+//        cashflowStackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
         cashflowStackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(cashflowStackView)
         NSLayoutConstraint.activate([
-            cashflowStackView.topAnchor.constraint(equalTo: accountStackView.bottomAnchor, constant: -35),
-            cashflowStackView.leadingAnchor.constraint(equalTo: accountStackView.leadingAnchor),
-            cashflowStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            cashflowStackView.topAnchor.constraint(equalTo: accountStackView.bottomAnchor, constant: verticalPadding),
+            cashflowStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: horizontalPadding),
+            cashflowStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -horizontalPadding)
         ])
         
         let incomeCashflow = CashflowView(cashflowType: .income)
         let expensesCashflow = CashflowView(cashflowType: .expense)
         
         cashflowStackView.addArrangedSubviews(incomeCashflow, expensesCashflow)
+        
+        let transactionCell = TransactionCell()
+        transactionCell.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(transactionCell)
+        NSLayoutConstraint.activate([
+            transactionCell.topAnchor.constraint(equalTo: cashflowStackView.bottomAnchor, constant: verticalPadding),
+            transactionCell.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            transactionCell.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            transactionCell.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
     }
     
     func updateAccounts(_ accounts: [Account]) {
