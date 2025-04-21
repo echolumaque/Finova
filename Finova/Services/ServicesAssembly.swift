@@ -15,5 +15,9 @@ class ServicesAssembly: Assembly {
         container.register(AccountService.self) { resolver in
             AccountService(coreDataStack: resolver.resolve(CoreDataStack.self)!)
         }.inObjectScope(.container)
+        
+        container.register(TransactionService.self) { resolver in
+            TransactionService(coreDataStack: resolver.resolve(CoreDataStack.self)!)
+        }.inObjectScope(.container)
     }
 }

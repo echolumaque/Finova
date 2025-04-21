@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum CashflowType: String, CaseIterable {
+enum CashflowType: String, Codable, CaseIterable {
     case income = "Income"
     case expense = "Expenses"
     

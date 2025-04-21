@@ -39,6 +39,12 @@ class TransactionCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        // MARK: For testing only
+        transactionTitle.text = "Groceries"
+        transactionDesc.text = "Bought groceries"
+        transactionCost.text = "- $120"
+        transactionTime.text = "10:00 AM"
+        
         configureMainHStack()
         configureFirstVStack()
         configureSecondVStack()
@@ -103,18 +109,10 @@ class TransactionCell: UICollectionViewCell {
         firstVStack.distribution = .fill
         mainHStack.addArrangedSubview(firstVStack)
         
-        configureTransactionTitle()
-        configureTransactionDesc()
-    }
-    
-    private func configureTransactionTitle() {
-        transactionTitle.text = "Groceries"
         firstVStack.addArrangedSubview(transactionTitle)
-    }
-    
-    private func configureTransactionDesc() {
-        transactionDesc.text = "Bought groceries"
         firstVStack.addArrangedSubview(transactionDesc)
+        secondVStack.addArrangedSubview(transactionCost)
+        secondVStack.addArrangedSubview(transactionTime)
     }
     
     private func configureSecondVStack() {
@@ -124,22 +122,13 @@ class TransactionCell: UICollectionViewCell {
         secondVStack.translatesAutoresizingMaskIntoConstraints = false
         secondVStack.distribution = .fill
         mainHStack.addArrangedSubview(secondVStack)
-        
-        configureTransactionCost()
-        configureTransactionTime()
     }
     
-    private func configureTransactionCost() {
-        transactionCost.text = "- $120"
-        secondVStack.addArrangedSubview(transactionCost)
-    }
-    
-    private func configureTransactionTime() {
-        transactionTime.text = "10:00 AM"
-        secondVStack.addArrangedSubview(transactionTime)
-    }
-    
-    func set() {
+    func set(transaction: Transaction) {
+        transactionTitle.text = transaction.type?.name ?? "Unavailable"
+        transactionDesc.text = transaction.type?.details ?? "Unavailable"
+        transactionCost.text = "- $\(transaction.value)"
+        transactionTime.text = transaction.date?.customFormat("hh:mm a")
         
     }
 }
@@ -149,5 +138,7 @@ class TransactionCell: UICollectionViewCell {
 //        let coreDataStack = CoreDataStack(inMemory: true)
 //        let hey = Account.getPredefinedAccounts(in: await coreDataStack.viewContext)
 //    }
-    return TransactionCell()
+//    let cell =
+//    return cell
+    TransactionCell()
 }
