@@ -28,5 +28,6 @@ class HomePresenterImpl: HomePresenter {
     
     func getPrdefinedTransactions() async {
         let predefinedTransactions = await interactor?.getPrdefinedTransactions() ?? []
+        view?.updateTransactions(predefinedTransactions)
     }
 }

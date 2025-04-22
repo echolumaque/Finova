@@ -5,11 +5,13 @@ PODS:
   - RxRelay (6.9.0):
     - RxSwift (= 6.9.0)
   - RxSwift (6.9.0)
+  - SnapKit (5.7.1)
   - Swinject (2.9.1)
 
 DEPENDENCIES:
   - RxCocoa
   - RxSwift
+  - SnapKit (~> 5.7.0)
   - Swinject
 
 SPEC REPOS:
@@ -17,14 +19,16 @@ SPEC REPOS:
     - RxCocoa
     - RxRelay
     - RxSwift
+    - SnapKit
     - Swinject
 
 SPEC CHECKSUMS:
   RxCocoa: ac16414696ae706516be3e1ab00fcce5bdc9be8a
   RxRelay: 6b0c930e5cef57d5fe2032571e5e65b78e3cbdb1
   RxSwift: 31649ace6aceeb422e16ff71c60804f9c3281ed9
+  SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
   Swinject: a827d508c6270da03ec74e558e728917a888fa9b
 
-PODFILE CHECKSUM: 06523b1a8acea87aa420935d69d7da026dcb3c2a
+PODFILE CHECKSUM: f20b431d2e8d3f35b6a71abe7c1699a80b9e2b1a
 
 COCOAPODS: 1.16.2

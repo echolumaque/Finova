@@ -5,6 +5,7 @@
 //  Created by Jhericoh Janquill Lumaque on 4/16/25.
 //
 
+import SnapKit
 import UIKit
 
 class TransactionCell: UICollectionViewCell {
@@ -65,13 +66,12 @@ class TransactionCell: UICollectionViewCell {
         
         mainHStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(mainHStack)
-        NSLayoutConstraint.activate([
-            mainHStack.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: verticalPadding),
-            mainHStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: horizontalPadding),
-            mainHStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -horizontalPadding),
-//            mainHStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -verticalPadding),
-            mainHStack.heightAnchor.constraint(equalToConstant: 100)
-        ])
+        mainHStack.snp.makeConstraints { make in
+            make.top.equalTo(contentView.safeAreaLayoutGuide.snp.top).offset(verticalPadding)
+            make.leading.equalTo(contentView.snp.leading)
+            make.trailing.equalTo(contentView.snp.trailing)
+            make.bottom.equalTo(contentView.safeAreaLayoutGuide.snp.bottom).offset(-verticalPadding)
+        }
         
         configureImage()
     }
@@ -89,14 +89,13 @@ class TransactionCell: UICollectionViewCell {
         transactionImage.tintColor = UIColor(rgb: 0xFF7043)
         
         imageContainer.addSubview(transactionImage)
-        NSLayoutConstraint.activate([
-            transactionImage.widthAnchor.constraint(equalToConstant: 40),
-            transactionImage.heightAnchor.constraint(equalToConstant: 40),
-            transactionImage.topAnchor.constraint(equalTo: imageContainer.topAnchor, constant: 10),
-            transactionImage.leadingAnchor.constraint(equalTo: imageContainer.leadingAnchor, constant: 10),
-            transactionImage.trailingAnchor.constraint(equalTo: imageContainer.trailingAnchor, constant: -10),
-            transactionImage.bottomAnchor.constraint(equalTo: imageContainer.bottomAnchor, constant: -10),
-        ])
+        transactionImage.snp.makeConstraints { make in
+            make.width.height.equalTo(40)
+            make.top.equalTo(imageContainer.snp.top).offset(10)
+            make.leading.equalTo(imageContainer.snp.leading).offset(10)
+            make.trailing.equalTo(imageContainer.snp.trailing).offset(-10)
+            make.bottom.equalTo(imageContainer.snp.bottom).offset(-10)
+        }
         
         mainHStack.addArrangedSubviews(imageContainer)
     }
@@ -127,7 +126,7 @@ class TransactionCell: UICollectionViewCell {
     func set(transaction: Transaction) {
         transactionTitle.text = transaction.type?.name ?? "Unavailable"
         transactionDesc.text = transaction.type?.details ?? "Unavailable"
-        transactionCost.text = "- $\(transaction.value)"
+        transactionCost.text = String(format: "- $%.2f", transaction.value)
         transactionTime.text = transaction.date?.customFormat("hh:mm a")
         
     }

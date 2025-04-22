@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import SnapKit
 import Swinject
 
 protocol HomeView: AnyObject {
     var presenter: HomePresenter? { get set }
     func updateAccounts(_ accounts: [Account])
+    func updateTransactions(_ transactions: [Transaction])
 }
 
 class HomeViewController: UIViewController, HomeView {
@@ -19,10 +21,21 @@ class HomeViewController: UIViewController, HomeView {
     private let horizontalPadding: CGFloat = 16
     private let verticalPadding: CGFloat = 8
     
+    private lazy var mainScrollView = UIScrollView(frame: .zero)
     private lazy var containerView = UIView(frame: .zero)
     private lazy var accountMenuStackView = UIStackView(frame: .zero)
     private lazy var accountStackView = UIStackView(frame: .zero)
     private lazy var recentTxnLabel = DynamicLabel(textColor: .black, font: UIFont.preferredFont(for: .title2, weight: .semibold))
+    
+    private lazy var txnCollectionView = UICollectionView(
+        frame: .zero,
+        collectionViewLayout: UICollectionViewLayoutHelper.createVerticalCompositionalLayout(
+            itemSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100)),
+            groupSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100)),
+            interGroupSpacing: 8
+        )
+    )
+    private var txnDataSource: UICollectionViewDiffableDataSource<Section, Transaction>!
     
     init(container: Resolver) {
         self.container = container
@@ -37,15 +50,18 @@ class HomeViewController: UIViewController, HomeView {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
+        configureScrollView()
         configureAccountContainerView()
         configureTopSection()
         configureMenuStackView()
         configureCashflowBadges()
         configureRecentTxnLabel()
+        configureTxnCollectionView()
         
         Task { [weak self] in
             guard let self else { return }
-            await presenter?.getPredefinedAccounts()
+//            await presenter?.getPredefinedAccounts()
+            await presenter?.getPrdefinedTransactions()
         }
     }
     
@@ -58,18 +74,26 @@ class HomeViewController: UIViewController, HomeView {
         containerView.layer.insertSublayer(gradientLayer, at: 0)
     }
     
+    private func configureScrollView() {
+        mainScrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(mainScrollView)
+        mainScrollView.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+    
     private func configureAccountContainerView() {
         containerView.clipsToBounds = true
         containerView.layer.cornerRadius = 30
         containerView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
         containerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(containerView)
-        NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: view.topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
+        mainScrollView.addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.equalTo(view.snp.top)
+            make.leading.equalTo(mainScrollView.snp.leading)
+            make.trailing.equalTo(mainScrollView.snp.trailing)
+        }
     }
     
     private func configureTopSection() {
@@ -86,30 +110,30 @@ class HomeViewController: UIViewController, HomeView {
 
         accountStackView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(accountStackView)
-        NSLayoutConstraint.activate([
-            accountStackView.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor),
-            accountStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: horizontalPadding),
-            accountStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -horizontalPadding),
-            accountStackView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor, constant: -30),
-        ])
+        accountStackView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.leading.equalTo(containerView.snp.leading).offset(horizontalPadding)
+            make.trailing.equalTo(containerView.snp.trailing).offset(-horizontalPadding)
+            make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-30)
+        }
         
         let accountBalanceAndName = UIView(frame: .zero)
         let availableBalance = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .title3, weight: .semibold))
         availableBalance.text = "Available Balance"
         accountBalanceAndName.addSubview(availableBalance)
-        NSLayoutConstraint.activate([
-            availableBalance.topAnchor.constraint(equalTo: accountBalanceAndName.topAnchor),
-            availableBalance.centerXAnchor.constraint(equalTo: accountBalanceAndName.centerXAnchor)
-        ])
+        availableBalance.snp.makeConstraints { make in
+            make.top.equalTo(accountBalanceAndName.snp.top)
+            make.centerX.equalTo(accountBalanceAndName.snp.centerX)
+        }
         
         let accountBalance = DynamicLabel(textColor: .label, font: UIFont.preferredFont(for: .extraLargeTitle, weight: .bold))
         accountBalance.text = "$5,000.00"
         accountBalanceAndName.addSubview(accountBalance)
-        NSLayoutConstraint.activate([
-            accountBalance.topAnchor.constraint(equalTo: availableBalance.bottomAnchor, constant: verticalPadding),
-            accountBalance.centerXAnchor.constraint(equalTo: accountBalanceAndName.centerXAnchor),
-            accountBalance.bottomAnchor.constraint(equalTo: accountBalanceAndName.bottomAnchor)
-        ])
+        accountBalance.snp.makeConstraints { make in
+            make.top.equalTo(availableBalance.snp.bottom).offset(verticalPadding)
+            make.centerX.equalTo(accountBalanceAndName.snp.centerX)
+            make.bottom.equalTo(accountBalanceAndName.snp.bottom)
+        }
         
         accountStackView.addArrangedSubviews(accountMenuStackView, accountBalanceAndName)
     }
@@ -174,31 +198,46 @@ class HomeViewController: UIViewController, HomeView {
         let expensesCashflow = CashflowView(cashflowType: .expense)
         
         cashflowStackView.addArrangedSubviews(incomeCashflow, expensesCashflow)
-        
-//        let transactionCell = TransactionCell()
-//        transactionCell.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(transactionCell)
-//        NSLayoutConstraint.activate([
-//            transactionCell.topAnchor.constraint(equalTo: cashflowStackView.bottomAnchor, constant: verticalPadding),
-//            transactionCell.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            transactionCell.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-////            transactionCell.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-//        ])
-        
     }
     
     private func configureRecentTxnLabel() {
         recentTxnLabel.text = "Recent Transaction(s)"
-        view.addSubview(recentTxnLabel)
-        NSLayoutConstraint.activate([
-            recentTxnLabel.topAnchor.constraint(equalTo: containerView.bottomAnchor, constant: verticalPadding),
-            recentTxnLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: horizontalPadding),
-            recentTxnLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -horizontalPadding),
-        ])
+        mainScrollView.addSubview(recentTxnLabel)
+        recentTxnLabel.snp.makeConstraints { make in
+            make.top.equalTo(containerView.snp.bottom).offset(verticalPadding)
+            make.leading.equalTo(containerView.snp.leading).offset(horizontalPadding)
+            make.trailing.equalTo(containerView.snp.trailing).offset(-horizontalPadding)
+        }
+    }
+    
+    func configureTxnCollectionView() {
+        txnCollectionView.translatesAutoresizingMaskIntoConstraints = false
+//        txnCollectionView.isScrollEnabled = false
+        mainScrollView.addSubview(txnCollectionView)
+        txnCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(recentTxnLabel.snp.bottom).offset(verticalPadding)
+            make.leading.equalTo(view.snp.leading).offset(horizontalPadding)
+            make.trailing.equalTo(view.snp.trailing).offset(-horizontalPadding)
+            make.bottom.equalTo(mainScrollView.snp.bottom).offset(-verticalPadding)
+        }
+        
+        let cell = UICollectionView.CellRegistration<TransactionCell, Transaction> { cell, indexPath, txn in
+            cell.set(transaction: txn)
+        }
+        txnDataSource = UICollectionViewDiffableDataSource(collectionView: txnCollectionView) { collectionView, indexPath, txn in
+            return collectionView.dequeueConfiguredReusableCell(using: cell, for: indexPath, item: txn)
+        }
     }
     
     func updateAccounts(_ accounts: [Account]) {
         
+    }
+    
+    func updateTransactions(_ transactions: [Transaction]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Transaction>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(transactions)
+        DispatchQueue.main.async { self.txnDataSource.apply(snapshot, animatingDifferences: true) }
     }
 }
 

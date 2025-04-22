@@ -9,6 +9,7 @@ target 'Finova' do
 pod 'Swinject'
 pod 'RxSwift'
 pod 'RxCocoa'
+pod 'SnapKit', '~> 5.7.0'
 
   target 'FinovaTests' do
     inherit! :search_paths

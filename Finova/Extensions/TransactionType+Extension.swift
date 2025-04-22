@@ -10,6 +10,7 @@ import CoreData
 
 extension TransactionType {
     convenience init(
+        typeId: UUID,
         details: String,
         kind: CashflowType,
         name: String,
@@ -17,21 +18,22 @@ extension TransactionType {
     ) {
         let entity = NSEntityDescription.entity(forEntityName: "TransactionType", in: context)!
         self.init(entity: entity, insertInto: context)
+        self.typeId = typeId
         self.details = details
         self.kind = kind.encode()
         self.name = name
     }
     
     static func getPredefinedTransactions(in context: NSManagedObjectContext) -> [TransactionType] {
-        let randomizedTransactionTypes = Array(
-            repeating: TransactionType(
+        let randomizedTransactionTypes = (0..<5).map { _ in
+            TransactionType(
+                typeId: UUID(),
                 details: "Lorem ipsum dolor sit amet consectetur adipiscing elit.",
                 kind: CashflowType.allCases.randomElement() ?? .income,
                 name: ["Lorem", "Ipsum", "Dolor", "Sit", "Amet"].randomElement() ?? "",
                 in: context
-            ),
-            count: 5
-        )
+            )
+        }
         
         return randomizedTransactionTypes
     }
