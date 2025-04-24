@@ -119,7 +119,7 @@ class CashflowView: UIView {
         NSLayoutConstraint.activate([
             hStack.topAnchor.constraint(equalTo: topAnchor, constant: verticalPadding),
             hStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: horizontalPadding),
-            hStack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            hStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             hStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -verticalPadding)
         ])
         
@@ -147,7 +147,7 @@ class CashflowView: UIView {
         cashflowName.text = cashflowType.rawValue
         vStack.addArrangedSubview(cashflowName)
         
-        let value = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .title1, weight: .bold), minimumScaleFactor: 0.75)
+        let value = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .title1, weight: .bold), minimumScaleFactor: 0.65)
         value.text = "$5,000.46"
         vStack.addArrangedSubview(value)
     }

@@ -42,13 +42,26 @@ struct UICollectionViewLayoutHelper {
     static func createVerticalCompositionalLayout(
         itemSize: NSCollectionLayoutSize,
         groupSize: NSCollectionLayoutSize,
-        interGroupSpacing: CGFloat
+        interGroupSpacing: CGFloat,
+        hasHeader: Bool = false
     ) -> UICollectionViewCompositionalLayout {
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = interGroupSpacing
+        
+        if hasHeader {
+            let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(200))
+            let header = NSCollectionLayoutBoundarySupplementaryItem(
+                layoutSize: headerSize,
+                elementKind: UICollectionView.elementKindSectionHeader,
+                alignment: .top
+            )
+            
+//            header.pinToVisibleBounds = true
+            section.boundarySupplementaryItems = [header]
+        }
         
         return UICollectionViewCompositionalLayout(section: section)
     }

@@ -68,8 +68,8 @@ class TransactionCell: UICollectionViewCell {
         contentView.addSubview(mainHStack)
         mainHStack.snp.makeConstraints { make in
             make.top.equalTo(contentView.safeAreaLayoutGuide.snp.top).offset(verticalPadding)
-            make.leading.equalTo(contentView.snp.leading)
-            make.trailing.equalTo(contentView.snp.trailing)
+            make.leading.equalTo(contentView.snp.leading).offset(horizontalPadding)
+            make.trailing.equalTo(contentView.snp.trailing).offset(-horizontalPadding)
             make.bottom.equalTo(contentView.safeAreaLayoutGuide.snp.bottom).offset(-verticalPadding)
         }
         
