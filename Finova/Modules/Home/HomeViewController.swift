@@ -46,6 +46,7 @@ class HomeViewController: UIViewController, HomeView {
         view.backgroundColor = .systemBackground
         
         configureTxnCollectionView()
+        configureCashflowInsertView()
         
         Task { [weak self] in
             guard let self else { return }
@@ -76,7 +77,7 @@ class HomeViewController: UIViewController, HomeView {
 //        }
 //    }
     
-    func configureTxnCollectionView() {
+    private func configureTxnCollectionView() {
         txnCollectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(txnCollectionView)
         txnCollectionView.snp.makeConstraints { make in
@@ -114,6 +115,16 @@ class HomeViewController: UIViewController, HomeView {
         }
     }
     
+    private func configureCashflowInsertView() {
+        let cashflowInsertView = CashflowInsertView(frame: .zero)
+        cashflowInsertView.delegate = self
+        view.addSubview(cashflowInsertView)
+        cashflowInsertView.snp.makeConstraints { make in
+            make.trailing.bottom.equalToSuperview { $0.safeAreaLayoutGuide }.inset(16)
+            make.size.equalTo(50)
+        }
+    }
+    
     func updateAccounts(_ accounts: [Account]) {
         
     }
@@ -132,6 +143,11 @@ extension HomeViewController: UICollectionViewDelegate {
     }
 }
 
+extension HomeViewController: CashflowInsertViewDelegate {
+    func onTapped() {
+        presenter?.gotoAddCashflow()
+    }
+}
 #Preview {
     HomeViewController(container: Container())
 }

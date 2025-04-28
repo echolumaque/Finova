@@ -12,6 +12,7 @@ typealias HomeEntryPoint = HomeView & UIViewController
 
 protocol HomeRouter {
     var view: HomeEntryPoint? { get }
+    func gotoAddCashflow()
 }
 
 class HomeRouterImpl: HomeRouter {
@@ -21,5 +22,10 @@ class HomeRouterImpl: HomeRouter {
     
     init(container: Resolver) {
         self.container = container
+    }
+    
+    func gotoAddCashflow() {
+        let cashflowView = container.resolve(CashflowRouter.self)?.view as? UIViewController
+        homeViewController?.navigationController?.pushViewController(cashflowView ?? UIViewController(), animated: true)
     }
 }

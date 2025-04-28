@@ -22,6 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 ServicesAssembly(),
                 MainTabAssembly(),
                 HomeAssembly(),
+                CashflowAssembly(),
                 StatisticsAssembly()
             ],
             container: container
