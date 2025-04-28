@@ -18,22 +18,22 @@ class TransactionCell: UICollectionViewCell {
     private lazy var transactionImage = UIImageView(frame: .zero)
     private lazy var transactionTitle = DynamicLabel(
         textColor: .label,
-        font: UIFont.preferredFont(for: .title3, weight: .regular),
+        font: UIFont.preferredFont(for: .body, weight: .regular),
         numberOfLines: 1
     )
     private lazy var transactionDesc = DynamicLabel(
         textColor: .secondaryLabel,
-        font: UIFont.preferredFont(for: .body, weight: .regular),
+        font: UIFont.preferredFont(for: .subheadline, weight: .regular),
         numberOfLines: 1
     )
     private lazy var transactionCost = DynamicLabel(
         textColor: .systemRed,
-        font: UIFont.preferredFont(for: .title3, weight: .bold),
+        font: UIFont.preferredFont(for: .body, weight: .bold),
         numberOfLines: 1
     )
     private lazy var transactionTime = DynamicLabel(
         textColor: .secondaryLabel,
-        font: UIFont.preferredFont(for: .body, weight: .regular),
+        font: UIFont.preferredFont(for: .subheadline, weight: .regular),
         numberOfLines: 1
     )
     
@@ -60,8 +60,8 @@ class TransactionCell: UICollectionViewCell {
         mainHStack.spacing = 10
         mainHStack.alignment = .center
         mainHStack.backgroundColor = .secondarySystemBackground.withAlphaComponent(0.5)
-        mainHStack.layer.cornerRadius = 24
-        mainHStack.layoutMargins = UIEdgeInsets(top: 14, left: 16, bottom: 14, right: 16)
+        mainHStack.layer.cornerRadius = 16
+        mainHStack.layoutMargins = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         mainHStack.isLayoutMarginsRelativeArrangement = true
         
         mainHStack.translatesAutoresizingMaskIntoConstraints = false
@@ -84,13 +84,13 @@ class TransactionCell: UICollectionViewCell {
         
         transactionImage.translatesAutoresizingMaskIntoConstraints = false
         transactionImage.contentMode = .scaleAspectFit
-        transactionImage.layer.cornerRadius = 16
+        transactionImage.layer.cornerRadius = 12
         transactionImage.image = UIImage(systemName: "cart.fill")
         transactionImage.tintColor = UIColor(rgb: 0xFF7043)
         
         imageContainer.addSubview(transactionImage)
         transactionImage.snp.makeConstraints { make in
-            make.width.height.equalTo(40)
+            make.width.height.equalTo(30)
             make.top.equalTo(imageContainer.snp.top).offset(10)
             make.leading.equalTo(imageContainer.snp.leading).offset(10)
             make.trailing.equalTo(imageContainer.snp.trailing).offset(-10)
@@ -102,7 +102,7 @@ class TransactionCell: UICollectionViewCell {
     
     private func configureFirstVStack() {
         firstVStack.axis = .vertical
-        firstVStack.spacing = 8
+        firstVStack.spacing = 6
         firstVStack.alignment = .leading
         firstVStack.translatesAutoresizingMaskIntoConstraints = false
         firstVStack.distribution = .fill
@@ -116,7 +116,7 @@ class TransactionCell: UICollectionViewCell {
     
     private func configureSecondVStack() {
         secondVStack.axis = .vertical
-        secondVStack.spacing = 8
+        secondVStack.spacing = 6
         secondVStack.alignment = .trailing
         secondVStack.translatesAutoresizingMaskIntoConstraints = false
         secondVStack.distribution = .fill

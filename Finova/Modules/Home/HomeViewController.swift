@@ -26,7 +26,7 @@ class HomeViewController: UIViewController, HomeView {
         collectionViewLayout: UICollectionViewLayoutHelper.createVerticalCompositionalLayout(
             itemSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100)),
             groupSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100)),
-            interGroupSpacing: 8,
+            interGroupSpacing: 4,
             hasHeader: true
         )
     )
@@ -63,6 +63,18 @@ class HomeViewController: UIViewController, HomeView {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
+    
+//    override func updateContentUnavailableConfiguration(using state: UIContentUnavailableConfigurationState) {
+//        var config = UIContentUnavailableConfiguration.empty()
+//        config.image = UIImage(resource: .customDollarsignBankBuildingSlashFill)
+//        config.text = "No transactions"
+//        config.secondaryText = "There are no recent transactions found."
+//        
+//        guard let presenter else {
+//            contentUnavailableConfiguration = config
+//            return
+//        }
+//    }
     
     func configureTxnCollectionView() {
         txnCollectionView.translatesAutoresizingMaskIntoConstraints = false

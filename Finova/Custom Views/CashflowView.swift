@@ -112,7 +112,7 @@ class CashflowView: UIView {
         hStack.axis = .horizontal
 //        hStack.backgroundColor = .red
         hStack.spacing = 15
-        hStack.layoutMargins = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
+        hStack.layoutMargins = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
         hStack.isLayoutMarginsRelativeArrangement = true
         hStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hStack)
@@ -131,8 +131,8 @@ class CashflowView: UIView {
         cashflowImage.tintColor = cashflowType.color
         cashflowImage.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            cashflowImage.widthAnchor.constraint(equalToConstant: 45),
-            cashflowImage.heightAnchor.constraint(equalToConstant: 45),
+            cashflowImage.widthAnchor.constraint(equalToConstant: 40),
+            cashflowImage.heightAnchor.constraint(equalToConstant: 40),
         ])
         hStack.addArrangedSubview(cashflowImage)
         
@@ -143,7 +143,7 @@ class CashflowView: UIView {
         vStack.spacing = 4
         hStack.addArrangedSubview(vStack)
         
-        let cashflowName = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .title3, weight: .semibold))
+        let cashflowName = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .headline, weight: .semibold))
         cashflowName.text = cashflowType.rawValue
         vStack.addArrangedSubview(cashflowName)
         

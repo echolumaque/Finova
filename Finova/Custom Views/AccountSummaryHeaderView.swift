@@ -52,13 +52,14 @@ class AccountSummaryHeaderView: UICollectionReusableView {
     
     private func configureHelperStackView() {
         helperStackView.axis = .vertical
+        helperStackView.alignment = .fill
         helperStackView.translatesAutoresizingMaskIntoConstraints = false
+        helperStackView.layoutMargins = UIEdgeInsets(top: 0, left: horizontalPadding, bottom: 0, right: horizontalPadding)
+        helperStackView.isLayoutMarginsRelativeArrangement = true
+        
         addSubview(helperStackView)
         helperStackView.snp.makeConstraints { make in
-            make.top.equalTo(snp.top).offset(verticalPadding)
-            make.leading.equalTo(snp.leading)
-            make.trailing.equalTo(snp.trailing)
-            make.bottom.equalTo(snp.bottom).offset(-verticalPadding)
+            make.edges.equalToSuperview()
         }
     }
     
@@ -69,11 +70,6 @@ class AccountSummaryHeaderView: UICollectionReusableView {
         
         containerView.translatesAutoresizingMaskIntoConstraints = false
         helperStackView.addArrangedSubview(containerView)
-        containerView.snp.makeConstraints { make in
-            make.top.equalTo(helperStackView.snp.top).offset(verticalPadding)
-            make.leading.equalTo(helperStackView.snp.leading)
-            make.trailing.equalTo(helperStackView.snp.trailing)
-        }
     }
     
     private func configureAccountStackView() {
@@ -158,11 +154,10 @@ class AccountSummaryHeaderView: UICollectionReusableView {
         cashflowStackView.distribution = .fillEqually
         cashflowStackView.spacing = horizontalPadding
         cashflowStackView.translatesAutoresizingMaskIntoConstraints = false
+        cashflowStackView.layoutMargins = UIEdgeInsets(top: 0, left: -horizontalPadding, bottom: 0, right: -horizontalPadding)
+        cashflowStackView.isLayoutMarginsRelativeArrangement = true
+        
         accountStackView.addArrangedSubview(cashflowStackView)
-        cashflowStackView.snp.makeConstraints { make in
-            make.leading.equalTo(snp.leading).offset(horizontalPadding)
-            make.trailing.equalTo(snp.trailing).offset(-horizontalPadding)
-        }
         
         let incomeCashflow = CashflowView(cashflowType: .income)
         let expensesCashflow = CashflowView(cashflowType: .expense)
@@ -173,10 +168,6 @@ class AccountSummaryHeaderView: UICollectionReusableView {
     private func configureRecentTxnLabel() {
         recentTxnLabel.text = "Recent Transaction(s)"
         helperStackView.addArrangedSubview(recentTxnLabel)
-        recentTxnLabel.snp.makeConstraints { make in
-            make.leading.equalTo(helperStackView.snp.leading).offset(horizontalPadding)
-            make.trailing.equalTo(helperStackView.snp.trailing).offset(-horizontalPadding)
-        }
     }
     
     private func configureFrequencySegmentedControl() {
@@ -190,12 +181,13 @@ class AccountSummaryHeaderView: UICollectionReusableView {
         frequencySegmentedControl.selectedSegmentIndex = 0
 
         helperStackView.setCustomSpacing(25, after: recentTxnLabel)
-        helperStackView.addArrangedSubviews(frequencySegmentedControl)
-        frequencySegmentedControl.snp.makeConstraints { make in
-            make.leading.equalTo(helperStackView.snp.leading).offset(horizontalPadding)
-            make.trailing.equalTo(helperStackView.snp.trailing).offset(-horizontalPadding)
-            make.bottom.equalTo(helperStackView.snp.bottom).offset(-verticalPadding)
-        }
+        helperStackView.addArrangedSubview(frequencySegmentedControl)
+        
+        let emptyView = UIView(frame: .zero)
+        emptyView.translatesAutoresizingMaskIntoConstraints = false
+        emptyView.snp.makeConstraints { make in make.height.equalTo(25) }
+        
+        helperStackView.addArrangedSubview(emptyView)
     }
     
     @objc func frequencyDidChange(_ segmentedControl: UISegmentedControl) {
