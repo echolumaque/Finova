@@ -5,6 +5,7 @@
 //  Created by Jhericoh Janquill Lumaque on 4/11/25.
 //
 
+import SnapKit
 import UIKit
 
 extension UIView {
@@ -41,14 +42,29 @@ extension UIView {
         }
     }
     
-    func pinToEdges(of superView: UIView) {
+    func pinToEdges(
+        of superView: UIView,
+        shouldUseSafeAreaHorizontal: Bool = false,
+        shouldUseSafeAreaVertical: Bool = false
+    ) {
         translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            topAnchor.constraint(equalTo: superView.safeAreaLayoutGuide.topAnchor),
-            leadingAnchor.constraint(equalTo: superView.leadingAnchor),
-            trailingAnchor.constraint(equalTo: superView.trailingAnchor),
-            bottomAnchor.constraint(equalTo: superView.safeAreaLayoutGuide.bottomAnchor),
-        ])
+        snp.makeConstraints { make in
+            switch (shouldUseSafeAreaHorizontal, shouldUseSafeAreaVertical) {
+            case (true, true):
+                make.edges.equalToSuperview { $0.safeAreaLayoutGuide }
+                
+            case (true, false):
+                make.horizontalEdges.equalToSuperview { $0.safeAreaLayoutGuide }
+                make.verticalEdges.equalToSuperview()
+                
+            case (false, true):
+                make.horizontalEdges.equalToSuperview()
+                make.verticalEdges.equalToSuperview { $0.safeAreaLayoutGuide }
+                
+            case (false, false):
+                make.edges.equalToSuperview()
+            }
+        }
     }
     
     func addSubviews(_ views: UIView...) {

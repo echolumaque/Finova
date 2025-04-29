@@ -12,7 +12,7 @@ protocol HomePresenter: AnyObject {
     var interactor: HomeInteractor? { get set }
     var view: HomeView? { get set }
     
-    func gotoAddCashflow()
+    func gotoAddCashflow(cashflowType: CashflowType)
     func getPredefinedAccounts() async
     func getPrdefinedTransactions() async
 }
@@ -32,7 +32,7 @@ class HomePresenterImpl: HomePresenter {
         view?.updateTransactions(predefinedTransactions)
     }
     
-    func gotoAddCashflow() {
-        router?.gotoAddCashflow()
+    func gotoAddCashflow(cashflowType: CashflowType) {
+        router?.gotoAddCashflow(cashflowType: cashflowType)
     }
 }

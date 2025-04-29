@@ -144,8 +144,8 @@ extension HomeViewController: UICollectionViewDelegate {
 }
 
 extension HomeViewController: CashflowInsertViewDelegate {
-    func onTapped() {
-        presenter?.gotoAddCashflow()
+    func onTapped(cashflowType: CashflowType) {
+        presenter?.gotoAddCashflow(cashflowType: cashflowType)
     }
 }
 #Preview {

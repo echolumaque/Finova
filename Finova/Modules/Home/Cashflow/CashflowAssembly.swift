@@ -10,14 +10,13 @@ import Swinject
 
 class CashflowAssembly: Assembly {
     func assemble(container: Container) {
-        container.register(CashflowRouter.self) { resolver in
-            let view = CashflowViewController()
+        container.register(CashflowRouter.self) { (resolver, cashflowType: CashflowType) in
+            let view = CashflowViewController(cashflowType: cashflowType)
             let interactor = CashflowInteractorImpl()
             let presenter = CashflowPresenterImpl()
             let router = CashflowRouterImpl()
             
             view.presenter = presenter
-            view.hidesBottomBarWhenPushed = true
             
             interactor.presenter = presenter
             

@@ -9,7 +9,7 @@ import SnapKit
 import UIKit
 
 protocol CashflowInsertViewDelegate: AnyObject {
-    func onTapped()
+    func onTapped(cashflowType: CashflowType)
 }
 
 class CashflowInsertView: UIView {
@@ -46,21 +46,26 @@ class CashflowInsertView: UIView {
             make.edges.equalToSuperview().inset(10)
         }
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(test))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapped))
         imageView.addGestureRecognizer(tapGesture)
     }
     
-    @objc private func test() {
-//        let actionSheet = UIAlertController(
-//            title: "Add Cashflow",
-//            message: "Please select an action whether you are adding an income or an expense.",
-//            preferredStyle: .actionSheet
-//        )
-//        actionSheet.addAction(UIAlertAction(title: "Add Income", style: .default))
-//        actionSheet.addAction(UIAlertAction(title: "Add Expense", style: .destructive))
-//        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-//        UIApplication.topViewController()?.present(actionSheet, animated: true)
-        delegate?.onTapped()
+    @objc private func onTapped() {
+        let actionSheet = UIAlertController(
+            title: "Add Cashflow",
+            message: "Please select an action whether you are adding an income or an expense.",
+            preferredStyle: .actionSheet
+        )
+        
+        actionSheet.addAction(UIAlertAction(title: "Add \(CashflowType.income.singularName)", style: .default, handler: onActionTapped))
+        actionSheet.addAction(UIAlertAction(title: "Add \(CashflowType.expense.singularName)", style: .destructive, handler: onActionTapped))
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        UIApplication.topViewController()?.present(actionSheet, animated: true)
+    }
+    
+    private func onActionTapped(_ action: UIAlertAction) {
+        delegate?.onTapped(cashflowType: action.title == "Add Income" ? .income : .expense)
     }
 }
 

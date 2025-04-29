@@ -19,7 +19,6 @@ class DynamicLabel: UILabel {
     convenience init(
         textColor: UIColor = .label,
         font: UIFont = UIFont.preferredFont(for: .title3, weight: .bold),
-        adjustsFontForContentSizeCategory: Bool = true,
         adjustsFontSizeToFitWidth: Bool = true,
         minimumScaleFactor: CGFloat = 0.75,
         numberOfLines: Int = 0
@@ -28,7 +27,7 @@ class DynamicLabel: UILabel {
         translatesAutoresizingMaskIntoConstraints = false
         self.textColor = textColor
         self.font = font
-        self.adjustsFontForContentSizeCategory = adjustsFontForContentSizeCategory
+        self.adjustsFontForContentSizeCategory = true
         self.adjustsFontSizeToFitWidth = adjustsFontSizeToFitWidth
         self.minimumScaleFactor = minimumScaleFactor
         self.numberOfLines = numberOfLines

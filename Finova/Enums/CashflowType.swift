@@ -15,6 +15,10 @@ enum CashflowType: String, Codable, CaseIterable {
         UIColor(rgb: self == .income ? 0x4BA570 : 0xE94E51)
     }
     
+    var singularName: String {
+        self == .income ? "Income" : "Expense"
+    }
+    
     var imageToUse: UIImage {
         UIImage(resource: self == .income ? .customBanknoteSealFillBadgePlus : .customBanknoteSealFillBadgeMinus)
     }
