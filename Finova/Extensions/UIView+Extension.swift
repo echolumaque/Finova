@@ -97,4 +97,50 @@ extension UIView {
         // Insert at the bottom so that any subviews appear above the gradient.
         layer.insertSublayer(gradientLayer, at: 0)
     }
+    
+//    func setDashedBorder(color: UIColor = .black,
+//                         lineWidth: CGFloat = 1,
+//                         dashPattern: [NSNumber] = [6, 3]) {
+//        layer.sublayers?.forEach { subLayer in
+//            if let dash = subLayer as? CAShapeLayer, dash.name == "DashedBorder" {
+//                dash.removeFromSuperlayer()
+//            }
+//        }
+//        
+//        let dash = CAShapeLayer()
+//        dash.name = "DashedBorder"
+//        dash.strokeColor = color.cgColor
+//        dash.fillColor = nil
+//        dash.lineWidth = lineWidth
+//        dash.lineDashPattern = dashPattern
+//        
+//        dash.frame = bounds
+//        dash.path = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
+//        
+//        layer.addSublayer(dash)
+//    }
+//    
+//    func updateDashedBorder() {
+//        layer.sublayers?.forEach { subLayer in
+//            if let dash = subLayer as? CAShapeLayer, dash.name == "DashedBorder" {
+//                dash.frame = bounds
+//                dash.path = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius)
+//                    .cgPath
+//            }
+//        }
+//    }
+    
+//    @discardableResult
+//    func addLineDashedStroke(pattern: [NSNumber]?, radius: CGFloat, color: CGColor) -> CALayer {
+//        let borderLayer = CAShapeLayer()
+//        
+//        borderLayer.strokeColor = color
+//        borderLayer.lineDashPattern = pattern
+//        borderLayer.frame = bounds
+//        borderLayer.fillColor = nil
+//        borderLayer.path = UIBezierPath(roundedRect: bounds, byRoundingCorners: .allCorners, cornerRadii: CGSize(width: radius, height: radius)).cgPath
+//        
+//        layer.addSublayer(borderLayer)
+//        return borderLayer
+//    }
 }

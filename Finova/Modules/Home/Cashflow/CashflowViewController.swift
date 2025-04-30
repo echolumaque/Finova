@@ -6,6 +6,7 @@
 //
 
 import SnapKit
+import PhotosUI
 import UIKit
 
 protocol CashflowViewProtocol: AnyObject {
@@ -21,6 +22,8 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     
     private let mainVStack = UIStackView(frame: .zero)
     private let bottomVStack = UIStackView(frame: .zero)
+    private var imagePicker: PHPickerViewController!
+    
     init(cashflowType: CashflowType) {
         self.cashflowType = cashflowType
         super.init(nibName: nil, bundle: nil)
@@ -29,6 +32,10 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     
     required init?(coder: NSCoder) {
         fatalError()
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
     }
     
     override func viewDidLoad() {
@@ -44,6 +51,9 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         configureAccountToUse()
         configureCategory()
         configureDescription()
+        configureAttachment()
+        configureRepeat()
+        configureContinueBtn()
     }
     
     private func configureMainVStack() {
@@ -120,6 +130,10 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     private func configureAccountToUse() {
         let accountStackView = UIStackView(frame: .zero)
         accountStackView.axis = .horizontal
+        
+        accountStackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
+        accountStackView.isLayoutMarginsRelativeArrangement = true
+        
         accountStackView.layer.cornerRadius = 16
         accountStackView.layer.borderWidth = 0.5
         accountStackView.layer.borderColor = UIColor.secondaryLabel.cgColor
@@ -128,11 +142,42 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         accountStackView.snp.makeConstraints { make in
             make.height.equalToSuperview().multipliedBy(0.085)
         }
+        
+        let accountLabel = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .body, weight: .regular))
+        accountLabel.text = "Account"
+        
+        let config = UIImage.SymbolConfiguration(font: UIFont.preferredFont(for: .callout, weight: .regular))
+        let chevronDown = UIImageView(image: UIImage(systemName: "chevron.down", withConfiguration: config))
+        chevronDown.contentMode = .scaleAspectFit
+        chevronDown.tintColor = .secondaryLabel
+        accountStackView.addArrangedSubviews(accountLabel, SpacerView(), chevronDown)
+        
+        let accountBtn = MenuButton(frame: .zero)
+        accountBtn.anchorView = accountLabel
+        accountBtn.contentHorizontalAlignment = .leading
+        accountBtn.showsMenuAsPrimaryAction = true
+        accountStackView.addSubviews(accountBtn)
+        accountBtn.pinToEdges(of: accountStackView)
+        
+        let option1 = UIAction(title: "Account 1") { _ in
+            print("Option 1 selected")
+        }
+        let option2 = UIAction(title: "Account 2") { _ in
+            print("Option 2 selected")
+        }
+        
+        let menu = UIMenu(options: .singleSelection, children: [option1, option2])
+        accountBtn.menu = menu
+        accountStackView.bringSubviewToFront(accountBtn)
     }
     
     private func configureCategory() {
         let categoryStackView = UIStackView(frame: .zero)
         categoryStackView.axis = .horizontal
+        
+        categoryStackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
+        categoryStackView.isLayoutMarginsRelativeArrangement = true
+        
         categoryStackView.layer.cornerRadius = 16
         categoryStackView.layer.borderWidth = 0.5
         categoryStackView.layer.borderColor = UIColor.secondaryLabel.cgColor
@@ -141,17 +186,48 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         categoryStackView.snp.makeConstraints { make in
             make.height.equalToSuperview().multipliedBy(0.085)
         }
+        
+        let categoryLabel = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .body, weight: .regular))
+        categoryLabel.text = "Category"
+        
+        let config = UIImage.SymbolConfiguration(font: UIFont.preferredFont(for: .callout, weight: .regular))
+        let chevronDown = UIImageView(image: UIImage(systemName: "chevron.down", withConfiguration: config))
+        chevronDown.contentMode = .scaleAspectFit
+        chevronDown.tintColor = .secondaryLabel
+        categoryStackView.addArrangedSubviews(categoryLabel, SpacerView(), chevronDown)
+        
+        let categoryBtn = MenuButton(frame: .zero)
+        categoryBtn.anchorView = categoryLabel
+        categoryBtn.contentHorizontalAlignment = .leading
+        categoryBtn.showsMenuAsPrimaryAction = true
+        categoryStackView.addSubview(categoryBtn)
+        categoryBtn.pinToEdges(of: categoryStackView)
+        
+        let option1 = UIAction(title: "Category 1") { _ in
+            print("Option 1 selected")
+        }
+        let option2 = UIAction(title: "Category 2") { _ in
+            print("Option 2 selected")
+        }
+        
+        let menu = UIMenu(options: .singleSelection, children: [option1, option2])
+        categoryBtn.menu = menu
+        categoryStackView.bringSubviewToFront(categoryBtn)
     }
     
     private func configureDescription() {
         let descriptionTextView = UITextView(frame: .zero)
         descriptionTextView.delegate = self
+        descriptionTextView.spellCheckingType = .no
+        descriptionTextView.autocorrectionType = .no
+        descriptionTextView.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
+        descriptionTextView.inputAccessoryView = textFieldToolbar {
+            
+        }
         
         descriptionTextView.layer.cornerRadius = 16
         descriptionTextView.layer.borderWidth = 0.5
         descriptionTextView.layer.borderColor = UIColor.secondaryLabel.cgColor
-        
-        descriptionTextView.textContainerInset = UIEdgeInsets(top: 12, left: horizontalPadding, bottom: 12, right: horizontalPadding)
         
         descriptionTextView.font = UIFont.preferredFont(for: .body, weight: .regular)
         descriptionTextView.textColor = .label
@@ -159,11 +235,59 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         descriptionTextView.textColor = .secondaryLabel
         
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        bottomVStack.addArrangedSubviews(descriptionTextView, SpacerView())
+        bottomVStack.addArrangedSubview(descriptionTextView)
         descriptionTextView.snp.makeConstraints { make in
-//            make.horizontalEdges.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.15)
         }
+    }
+    
+    private func configureAttachment() {
+        let dashedBorder = DashedBorderView(lineWidth: 0.5)
+        dashedBorder.layer.cornerRadius = 16
+        bottomVStack.addArrangedSubview(dashedBorder)
+        dashedBorder.snp.makeConstraints { make in
+            make.height.equalToSuperview().multipliedBy(0.085)
+        }
+        
+        var phPickerConfig = PHPickerConfiguration(photoLibrary: .shared())
+        phPickerConfig.selectionLimit = 1
+        phPickerConfig.filter = .images
+        
+        imagePicker = PHPickerViewController(configuration: phPickerConfig)
+        imagePicker.delegate = self
+        
+        var config = UIButton.Configuration.plain()
+        config.image = UIImage(systemName: "paperclip")
+        config.title = "Add attachment"
+        config.imagePlacement = .leading
+        config.imagePadding = 10
+        
+        let labelButton = UIButton(configuration: config, primaryAction: UIAction { [weak self] _ in
+            guard let self else { return }
+            present(imagePicker, animated: true)
+        })
+        labelButton.tintColor = .secondaryLabel
+        labelButton.isUserInteractionEnabled = true
+        
+        labelButton.translatesAutoresizingMaskIntoConstraints = false
+        dashedBorder.addSubview(labelButton)
+        labelButton.snp.makeConstraints { $0.edges.equalToSuperview() }
+    }
+    
+    private func configureRepeat() {
+        
+    }
+    
+    private func configureContinueBtn() {
+        var config = UIButton.Configuration.filled()
+        config.cornerStyle = .capsule
+        config.baseBackgroundColor = .primaryColor
+        config.baseForegroundColor = .white
+        config.buttonSize = .large
+        config.title = "Continue"
+        
+        let continueBtn = UIButton(configuration: config, primaryAction: nil)
+        bottomVStack.addArrangedSubviews(SpacerView(), continueBtn)
     }
 }
 
@@ -194,6 +318,12 @@ extension CashflowViewController: UITextViewDelegate {
             textView.text = "Description"
             textView.textColor = .secondaryLabel
         }
+    }
+}
+
+extension CashflowViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
     }
 }
 

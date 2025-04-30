@@ -17,7 +17,7 @@ class MainTabRouterImpl: MainTabRouter {
     
     func createHome(container: Resolver) -> UINavigationController {
         let home = container.resolve(HomeRouter.self)?.view
-        return UINavigationController(rootViewController: home ?? UIViewController())
+        return CustomNavigationController(rootViewController: home ?? UIViewController())
     }
     
     func createStatistics(container: Resolver) -> UINavigationController {
