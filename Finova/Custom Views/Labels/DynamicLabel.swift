@@ -18,9 +18,9 @@ class DynamicLabel: UILabel {
     
     convenience init(
         textColor: UIColor = .label,
-        font: UIFont = UIFont.preferredFont(for: .title3, weight: .bold),
+        font: UIFont = UIFont.preferredFont(for: .body, weight: .regular),
         adjustsFontSizeToFitWidth: Bool = true,
-        minimumScaleFactor: CGFloat = 0.75,
+        minimumScaleFactor: CGFloat = 1.0,
         numberOfLines: Int = 0
     ) {
         self.init(frame: .zero)

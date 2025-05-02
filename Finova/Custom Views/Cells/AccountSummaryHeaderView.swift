@@ -156,12 +156,10 @@ class AccountSummaryHeaderView: UICollectionReusableView {
         cashflowStackView.translatesAutoresizingMaskIntoConstraints = false
         cashflowStackView.layoutMargins = UIEdgeInsets(top: 0, left: -horizontalPadding, bottom: 0, right: -horizontalPadding)
         cashflowStackView.isLayoutMarginsRelativeArrangement = true
-        
         accountStackView.addArrangedSubview(cashflowStackView)
         
-        let incomeCashflow = CashflowView(cashflowType: .income)
-        let expensesCashflow = CashflowView(cashflowType: .expense)
-        
+        let incomeCashflow = CashflowView(cashflowType: .credit)
+        let expensesCashflow = CashflowView(cashflowType: .debit)
         cashflowStackView.addArrangedSubviews(incomeCashflow, expensesCashflow)
     }
     

@@ -11,6 +11,9 @@ import UIKit
 
 protocol CashflowViewProtocol: AnyObject {
     var presenter: CashflowPresenter? { get set }
+    
+    func configureAccountMenuData(_ accounts: [Account])
+    func configureCategories(_ categories: [Category])
 }
 
 class CashflowViewController: UIViewController, CashflowViewProtocol {
@@ -22,6 +25,10 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     
     private let mainVStack = UIStackView(frame: .zero)
     private let bottomVStack = UIStackView(frame: .zero)
+    private let accountLabel = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .body, weight: .regular))
+    private let accountBtn = MenuButton(frame: .zero)
+    private let categoryLabel = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .body, weight: .regular))
+    private let categoryBtn = MenuButton(frame: .zero)
     private var imagePicker: PHPickerViewController!
     
     init(cashflowType: CashflowType) {
@@ -41,7 +48,7 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = cashflowType.color
-        navigationItem.title = cashflowType.singularName
+        navigationItem.title = cashflowType.rawValue
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationController?.navigationBar.tintColor = UIColor.white
         
@@ -54,6 +61,8 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         configureAttachment()
         configureRepeat()
         configureContinueBtn()
+        
+        presenter?.viewDidLoad()
     }
     
     private func configureMainVStack() {
@@ -114,7 +123,7 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     private func configureBottomSection() {
         bottomVStack.axis = .vertical
         bottomVStack.spacing = 40
-        bottomVStack.backgroundColor = .white
+        bottomVStack.backgroundColor = .systemBackground
         bottomVStack.clipsToBounds = true
         bottomVStack.layer.cornerRadius = 30
         bottomVStack.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
@@ -136,14 +145,13 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         
         accountStackView.layer.cornerRadius = 16
         accountStackView.layer.borderWidth = 0.5
-        accountStackView.layer.borderColor = UIColor.secondaryLabel.cgColor
+        accountStackView.layer.borderColor = UIColor.separator.cgColor
         
         bottomVStack.addArrangedSubview(accountStackView)
         accountStackView.snp.makeConstraints { make in
             make.height.equalToSuperview().multipliedBy(0.085)
         }
         
-        let accountLabel = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .body, weight: .regular))
         accountLabel.text = "Account"
         
         let config = UIImage.SymbolConfiguration(font: UIFont.preferredFont(for: .callout, weight: .regular))
@@ -152,22 +160,11 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         chevronDown.tintColor = .secondaryLabel
         accountStackView.addArrangedSubviews(accountLabel, SpacerView(), chevronDown)
         
-        let accountBtn = MenuButton(frame: .zero)
         accountBtn.anchorView = accountLabel
         accountBtn.contentHorizontalAlignment = .leading
         accountBtn.showsMenuAsPrimaryAction = true
         accountStackView.addSubviews(accountBtn)
         accountBtn.pinToEdges(of: accountStackView)
-        
-        let option1 = UIAction(title: "Account 1") { _ in
-            print("Option 1 selected")
-        }
-        let option2 = UIAction(title: "Account 2") { _ in
-            print("Option 2 selected")
-        }
-        
-        let menu = UIMenu(options: .singleSelection, children: [option1, option2])
-        accountBtn.menu = menu
         accountStackView.bringSubviewToFront(accountBtn)
     }
     
@@ -180,14 +177,13 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         
         categoryStackView.layer.cornerRadius = 16
         categoryStackView.layer.borderWidth = 0.5
-        categoryStackView.layer.borderColor = UIColor.secondaryLabel.cgColor
+        categoryStackView.layer.borderColor = UIColor.separator.cgColor
         
         bottomVStack.addArrangedSubviews(categoryStackView)
         categoryStackView.snp.makeConstraints { make in
             make.height.equalToSuperview().multipliedBy(0.085)
         }
         
-        let categoryLabel = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .body, weight: .regular))
         categoryLabel.text = "Category"
         
         let config = UIImage.SymbolConfiguration(font: UIFont.preferredFont(for: .callout, weight: .regular))
@@ -196,22 +192,12 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         chevronDown.tintColor = .secondaryLabel
         categoryStackView.addArrangedSubviews(categoryLabel, SpacerView(), chevronDown)
         
-        let categoryBtn = MenuButton(frame: .zero)
+        
         categoryBtn.anchorView = categoryLabel
         categoryBtn.contentHorizontalAlignment = .leading
         categoryBtn.showsMenuAsPrimaryAction = true
         categoryStackView.addSubview(categoryBtn)
         categoryBtn.pinToEdges(of: categoryStackView)
-        
-        let option1 = UIAction(title: "Category 1") { _ in
-            print("Option 1 selected")
-        }
-        let option2 = UIAction(title: "Category 2") { _ in
-            print("Option 2 selected")
-        }
-        
-        let menu = UIMenu(options: .singleSelection, children: [option1, option2])
-        categoryBtn.menu = menu
         categoryStackView.bringSubviewToFront(categoryBtn)
     }
     
@@ -227,7 +213,7 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         
         descriptionTextView.layer.cornerRadius = 16
         descriptionTextView.layer.borderWidth = 0.5
-        descriptionTextView.layer.borderColor = UIColor.secondaryLabel.cgColor
+        descriptionTextView.layer.borderColor = UIColor.separator.cgColor
         
         descriptionTextView.font = UIFont.preferredFont(for: .body, weight: .regular)
         descriptionTextView.textColor = .label
@@ -242,7 +228,7 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     }
     
     private func configureAttachment() {
-        let dashedBorder = DashedBorderView(lineWidth: 0.5)
+        let dashedBorder = DashedBorderView(color: .separator, lineWidth: 0.5)
         dashedBorder.layer.cornerRadius = 16
         bottomVStack.addArrangedSubview(dashedBorder)
         dashedBorder.snp.makeConstraints { make in
@@ -289,6 +275,34 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         let continueBtn = UIButton(configuration: config, primaryAction: nil)
         bottomVStack.addArrangedSubviews(SpacerView(), continueBtn)
     }
+    
+    func configureAccountMenuData(_ accounts: [Account]) {
+        let actions = accounts.map { account in
+            UIAction(title: account.name ?? "") { [weak self] _ in
+                guard let self else { return }
+                presenter?.selectAccount(account)
+                accountLabel.text = account.name ?? ""
+                if accountLabel.textColor != .label { accountLabel.textColor = .label }
+            }
+        }
+        
+        let menu = UIMenu(options: .singleSelection, children: actions)
+        accountBtn.menu = menu
+    }
+    
+    func configureCategories(_ categories: [Category]) {
+        let actions = categories.map { category in
+            UIAction(title: category.name ?? "") { [weak self] _ in
+                guard let self else { return }
+                presenter?.selectCategory(category)
+                categoryLabel.text = category.name ?? ""
+                if categoryLabel.textColor != .label { categoryLabel.textColor = .label }
+            }
+        }
+        
+        let menu = UIMenu(options: .singleSelection, children: actions)
+        categoryBtn.menu = menu
+    }
 }
 
 extension CashflowViewController: UITextFieldDelegate {
@@ -328,5 +342,5 @@ extension CashflowViewController: PHPickerViewControllerDelegate {
 }
 
 #Preview {
-    CashflowViewController(cashflowType: .income)
+    CashflowViewController(cashflowType: .credit)
 }

@@ -12,7 +12,10 @@ class CashflowAssembly: Assembly {
     func assemble(container: Container) {
         container.register(CashflowRouter.self) { (resolver, cashflowType: CashflowType) in
             let view = CashflowViewController(cashflowType: cashflowType)
-            let interactor = CashflowInteractorImpl()
+            let interactor = CashflowInteractorImpl(
+                accountService: resolver.resolve(AccountService.self)!,
+                categoryService: resolver.resolve(CategoryService.self)!
+            )
             let presenter = CashflowPresenterImpl()
             let router = CashflowRouterImpl()
             

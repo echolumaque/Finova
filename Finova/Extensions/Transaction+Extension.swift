@@ -22,8 +22,8 @@ extension Transaction {
         self.value = value
     }
     
-    static func getPredefinedTransactions(in context: NSManagedObjectContext, type: [TransactionType]) -> [Transaction] {
-        let randomizedTransactions = (0..<5).map { _ in
+    static func getPredefinedTransactions(in context: NSManagedObjectContext, type: [Category]) -> [Transaction] {
+        let randomizedTransactions = (0..<15).map { _ in
             Transaction(
                 txnId: UUID(),
                 date: Date(
@@ -38,9 +38,9 @@ extension Transaction {
         }
         
         for index in randomizedTransactions.indices {
-            randomizedTransactions[index].type = type[index]
+            randomizedTransactions[index].category = type[index]
         }
         
-        return randomizedTransactions
+        return randomizedTransactions.sorted { $0.date.safelyUnwrappedToNow > $1.date.safelyUnwrappedToNow }
     }
 }

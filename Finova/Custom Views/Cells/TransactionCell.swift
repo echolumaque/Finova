@@ -12,26 +12,28 @@ class TransactionCell: UICollectionViewCell {
     private let horizontalPadding: CGFloat = 20
     private let verticalPadding: CGFloat = 8
     
-    private lazy var mainHStack = UIStackView(frame: .zero)
-    private lazy var firstVStack = UIStackView(frame: .zero)
-    private lazy var secondVStack = UIStackView(frame: .zero)
-    private lazy var transactionImage = UIImageView(frame: .zero)
-    private lazy var transactionTitle = DynamicLabel(
+    private let mainHStack = UIStackView(frame: .zero)
+    private let firstVStack = UIStackView(frame: .zero)
+    private let secondVStack = UIStackView(frame: .zero)
+    private let imageContainer = UIView(frame: .zero)
+    private let transactionImage = UIImageView(frame: .zero)
+    private let transactionTitle = DynamicLabel(
         textColor: .label,
         font: UIFont.preferredFont(for: .body, weight: .regular),
         numberOfLines: 1
     )
-    private lazy var transactionDesc = DynamicLabel(
+    private let transactionDesc = DynamicLabel(
         textColor: .secondaryLabel,
         font: UIFont.preferredFont(for: .subheadline, weight: .regular),
         numberOfLines: 1
     )
-    private lazy var transactionCost = DynamicLabel(
-        textColor: .systemRed,
+    private let transactionCost = DynamicLabel(
+        textColor: .label,
         font: UIFont.preferredFont(for: .body, weight: .bold),
+        minimumScaleFactor: 0.8,
         numberOfLines: 1
     )
-    private lazy var transactionTime = DynamicLabel(
+    private let transactionTime = DynamicLabel(
         textColor: .secondaryLabel,
         font: UIFont.preferredFont(for: .subheadline, weight: .regular),
         numberOfLines: 1
@@ -77,16 +79,12 @@ class TransactionCell: UICollectionViewCell {
     }
     
     private func configureImage() {
-        let imageContainer = UIView()
         imageContainer.translatesAutoresizingMaskIntoConstraints = false
-        imageContainer.backgroundColor = UIColor(rgb: 0xFF7043).withAlphaComponent(0.2)
         imageContainer.layer.cornerRadius = 10
         
         transactionImage.translatesAutoresizingMaskIntoConstraints = false
         transactionImage.contentMode = .scaleAspectFit
         transactionImage.layer.cornerRadius = 12
-        transactionImage.image = UIImage(systemName: "cart.fill")
-        transactionImage.tintColor = UIColor(rgb: 0xFF7043)
         
         imageContainer.addSubview(transactionImage)
         transactionImage.snp.makeConstraints { make in
@@ -107,11 +105,7 @@ class TransactionCell: UICollectionViewCell {
         firstVStack.translatesAutoresizingMaskIntoConstraints = false
         firstVStack.distribution = .fill
         mainHStack.addArrangedSubview(firstVStack)
-        
-        firstVStack.addArrangedSubview(transactionTitle)
-        firstVStack.addArrangedSubview(transactionDesc)
-        secondVStack.addArrangedSubview(transactionCost)
-        secondVStack.addArrangedSubview(transactionTime)
+        firstVStack.addArrangedSubviews(transactionTitle, transactionDesc)
     }
     
     private func configureSecondVStack() {
@@ -121,12 +115,25 @@ class TransactionCell: UICollectionViewCell {
         secondVStack.translatesAutoresizingMaskIntoConstraints = false
         secondVStack.distribution = .fill
         mainHStack.addArrangedSubview(secondVStack)
+        secondVStack.addArrangedSubviews(transactionCost, transactionTime)
+        secondVStack.snp.makeConstraints { $0.width.equalToSuperview().multipliedBy(0.2) }
     }
     
     func set(transaction: Transaction) {
-        transactionTitle.text = transaction.type?.name ?? "Unavailable"
-        transactionDesc.text = transaction.type?.details ?? "Unavailable"
-        transactionCost.text = String(format: "- $%.2f", transaction.value)
+        let cashflowType = transaction.category?.cashflowType?.decode(CashflowType.self) ?? .both
+        
+        imageContainer.backgroundColor = cashflowType.color.withAlphaComponent(0.2)
+        transactionImage.image = UIImage(systemName: transaction.category?.logo ?? "")
+        transactionImage.tintColor = cashflowType.color
+        
+        transactionTitle.text = transaction.category?.name ?? "Unavailable"
+        
+        transactionDesc.text = transaction.category?.details ?? "Unavailable"
+        
+
+        transactionCost.textColor = cashflowType.color
+        transactionCost.text = String(format: "\(cashflowType.operatorToUse)$%.2f", transaction.value)
+        
         transactionTime.text = transaction.date?.customFormat("hh:mm a")
         
     }

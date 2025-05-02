@@ -1,24 +1,24 @@
 //
-//  TransactionService.swift
+//  CategoryService.swift
 //  Finova
 //
-//  Created by Jhericoh Janquill Lumaque on 4/22/25.
+//  Created by Jhericoh Janquill Lumaque on 5/2/25.
 //
 
+import CoreData
 import Foundation
 
-actor TransactionService {
+actor CategoryService {
     private let coreDataStack: CoreDataStack
     
     init(coreDataStack: CoreDataStack) {
         self.coreDataStack = coreDataStack
     }
     
-    func getPredefinedTransactions() async -> [Transaction] {
+    func getPredefinedCategories() async -> [Category] {
         let viewContext = await coreDataStack.viewContext
         let testTransactionTypes = Category.getPredefinedTransactions(in: viewContext)
-        let testTransactions = Transaction.getPredefinedTransactions(in: viewContext, type: testTransactionTypes)
         
-        return testTransactions
+        return testTransactionTypes
     }
 }

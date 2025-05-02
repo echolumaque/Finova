@@ -166,7 +166,7 @@ extension Date {
     var year: Int {
         Calendar.gregorian.component(.year, from: self)
     }
-
+    
     func add(component: Calendar.Component, value: Int) -> Date {
         Calendar.gregorian.date(byAdding: component, value: value, to: self) ?? .now
     }
@@ -278,5 +278,15 @@ extension Date {
 
     func stripTime() -> Date {
         Calendar.gregorian.startOfDay(for: self)
+    }
+}
+
+extension Date? {
+    var safelyUnwrappedToNow: Date {
+        self ?? .now
+    }
+    
+    func safelyUnwrappedTo(date: Date) -> Date {
+        self ?? date
     }
 }

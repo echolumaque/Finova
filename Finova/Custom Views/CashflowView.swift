@@ -154,5 +154,5 @@ class CashflowView: UIView {
 }
 
 #Preview {
-    CashflowView(cashflowType: .income)
+    CashflowView(cashflowType: .credit)
 }

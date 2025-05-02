@@ -8,18 +8,27 @@
 import UIKit
 
 enum CashflowType: String, Codable, CaseIterable {
-    case income = "Income"
-    case expense = "Expenses"
+    case credit = "Credit"
+    case debit = "Debit"
+    case both = "Both"
     
     var color: UIColor {
-        UIColor(rgb: self == .income ? 0x4BA570 : 0xE94E51)
-    }
-    
-    var singularName: String {
-        self == .income ? "Income" : "Expense"
+        switch self {
+        case .credit: UIColor(rgb: 0x4BA570)
+        case .debit: UIColor(rgb: 0xE94E51)
+        case .both: UIColor(rgb: 0xFFA500)
+        }
     }
     
     var imageToUse: UIImage {
-        UIImage(resource: self == .income ? .customBanknoteSealFillBadgePlus : .customBanknoteSealFillBadgeMinus)
+        UIImage(resource: self == .credit ? .customBanknoteSealFillBadgePlus : .customBanknoteSealFillBadgeMinus)
+    }
+    
+    var operatorToUse: String {
+        switch self {
+        case .credit: "+"
+        case .debit: "-"
+        case .both: ""
+        }
     }
 }
