@@ -57,15 +57,26 @@ class CashflowInsertView: UIView {
             preferredStyle: .actionSheet
         )
         
-        actionSheet.addAction(UIAlertAction(title: "Add \(CashflowType.credit.rawValue)", style: .default, handler: onActionTapped))
-        actionSheet.addAction(UIAlertAction(title: "Add \(CashflowType.debit.rawValue)", style: .destructive, handler: onActionTapped))
+        for cashflow in CashflowType.allCases {
+            actionSheet.addAction(UIAlertAction(
+                title: "Add \(cashflow.rawValue)",
+                style: cashflow == .credit ? .default : .destructive,
+                handler: onActionTapped
+            ))
+        }
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         
         UIApplication.topViewController()?.present(actionSheet, animated: true)
     }
     
     private func onActionTapped(_ action: UIAlertAction) {
-        delegate?.onTapped(cashflowType: action.title == "Add Credit" ? .credit : .debit)
+        let cashflowType: CashflowType = switch action.title {
+        case "Add Credit": .credit
+        case "Add Debit": .debit
+        default: .credit
+        }
+        
+        delegate?.onTapped(cashflowType: cashflowType)
     }
 }
 

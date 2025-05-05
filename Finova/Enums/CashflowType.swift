@@ -10,13 +10,11 @@ import UIKit
 enum CashflowType: String, Codable, CaseIterable {
     case credit = "Credit"
     case debit = "Debit"
-    case both = "Both"
     
     var color: UIColor {
         switch self {
         case .credit: UIColor(rgb: 0x4BA570)
         case .debit: UIColor(rgb: 0xE94E51)
-        case .both: UIColor(rgb: 0xFFA500)
         }
     }
     
@@ -28,7 +26,6 @@ enum CashflowType: String, Codable, CaseIterable {
         switch self {
         case .credit: "+"
         case .debit: "-"
-        case .both: ""
         }
     }
 }

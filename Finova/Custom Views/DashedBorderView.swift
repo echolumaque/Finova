@@ -8,6 +8,8 @@
 import UIKit
 
 class DashedBorderView: UIView {
+    private var color: UIColor = .clear
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -16,20 +18,21 @@ class DashedBorderView: UIView {
         fatalError()
     }
     
-    convenience init(color: UIColor = .secondaryLabel,
+    convenience init(color: UIColor,
                      lineWidth: CGFloat = 1,
                      dashPattern: [NSNumber] = [6, 3]) {
         self.init(frame: .zero)
+        self.color = color
         addDashedBorder(color: color, lineWidth: lineWidth, dashPattern: dashPattern)
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        addDashedBorder(color: .secondaryLabel, lineWidth: 1, dashPattern: [6, 3])
+        addDashedBorder(color: color, lineWidth: 1, dashPattern: [6, 3])
     }
     
-    private func addDashedBorder(color: UIColor = .secondaryLabel,
-                                 lineWidth: CGFloat = 1,
+    private func addDashedBorder(color: UIColor,
+                                 lineWidth: CGFloat = 0.5,
                                  dashPattern: [NSNumber] = [6, 3]) {
         translatesAutoresizingMaskIntoConstraints = false
         

@@ -25,7 +25,7 @@ class HomeRouterImpl: HomeRouter {
     }
     
     func gotoAddCashflow(cashflowType: CashflowType) {
-        let cashflowView = container.resolve(CashflowRouter.self, argument: cashflowType)?.view as? UIViewController
+        let cashflowView = container.resolve(UpsertCashflowRouter.self, argument: cashflowType)?.view as? UIViewController
         homeViewController?.navigationController?.pushViewController(cashflowView ?? UIViewController(), animated: true)
     }
 }

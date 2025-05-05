@@ -1,5 +1,5 @@
 //
-//  CashflowInteractor.swift
+//  UpsertCashflowInteractor.swift
 //  Finova
 //
 //  Created by Jhericoh Janquill Lumaque on 4/29/25.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-protocol CashflowInteractor: AnyObject {
-    var presenter: CashflowPresenter? { get set }
+protocol UpsertCashflowInteractor: AnyObject {
+    var presenter: UpsertCashflowPresenter? { get set }
     
     func getAccounts() async -> [Account]
     func selectAccount(_ account: Account)
@@ -17,11 +17,11 @@ protocol CashflowInteractor: AnyObject {
     func selectCategory(_ category: Category)
 }
 
-class CashflowInteractorImpl: CashflowInteractor {
+class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
     private let accountService: AccountService
     private let categoryService: CategoryService
     
-    weak var presenter: (any CashflowPresenter)?
+    weak var presenter: (any UpsertCashflowPresenter)?
     private var selectedAccount: Account?
     private var selectedCategory: Category?
     

@@ -439,6 +439,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Finova/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Finova;
+				INFOPLIST_KEY_NSCameraUsageDescription = "To capture photos, we need your permission to use the camera.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "To pick photos, we need your permission to access your photo library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -473,6 +475,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Finova/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Finova;
+				INFOPLIST_KEY_NSCameraUsageDescription = "To capture photos, we need your permission to use the camera.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "To pick photos, we need your permission to access your photo library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

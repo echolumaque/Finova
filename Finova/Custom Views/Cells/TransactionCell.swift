@@ -120,7 +120,7 @@ class TransactionCell: UICollectionViewCell {
     }
     
     func set(transaction: Transaction) {
-        let cashflowType = transaction.category?.cashflowType?.decode(CashflowType.self) ?? .both
+        let cashflowType = transaction.category?.cashflowType?.decode(CashflowType.self) ?? .credit
         
         imageContainer.backgroundColor = cashflowType.color.withAlphaComponent(0.2)
         transactionImage.image = UIImage(systemName: transaction.category?.logo ?? "")

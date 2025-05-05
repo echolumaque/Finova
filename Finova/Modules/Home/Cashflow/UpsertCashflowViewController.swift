@@ -1,5 +1,5 @@
 //
-//  CashflowViewController.swift
+//  UpsertCashflowViewController.swift
 //  Finova
 //
 //  Created by Jhericoh Janquill Lumaque on 4/29/25.
@@ -9,19 +9,19 @@ import SnapKit
 import PhotosUI
 import UIKit
 
-protocol CashflowViewProtocol: AnyObject {
-    var presenter: CashflowPresenter? { get set }
+protocol UpsertCashflowViewProtocol: AnyObject {
+    var presenter: UpsertCashflowPresenter? { get set }
     
     func configureAccountMenuData(_ accounts: [Account])
     func configureCategories(_ categories: [Category])
 }
 
-class CashflowViewController: UIViewController, CashflowViewProtocol {
+class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol {
     private let horizontalPadding: CGFloat = 20
     private let verticalPadding: CGFloat = 8
     private let cashflowType: CashflowType
     
-    var presenter: CashflowPresenter?
+    var presenter: UpsertCashflowPresenter?
     
     private let mainVStack = UIStackView(frame: .zero)
     private let bottomVStack = UIStackView(frame: .zero)
@@ -29,7 +29,7 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     private let accountBtn = MenuButton(frame: .zero)
     private let categoryLabel = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .body, weight: .regular))
     private let categoryBtn = MenuButton(frame: .zero)
-    private var imagePicker: PHPickerViewController!
+    private let selectedPhoto = UIImageView(frame: .zero)
     
     init(cashflowType: CashflowType) {
         self.cashflowType = cashflowType
@@ -124,6 +124,15 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         bottomVStack.axis = .vertical
         bottomVStack.spacing = 40
         bottomVStack.backgroundColor = .systemBackground
+        // More reference: https://stackoverflow.com/questions/77475103/traitcollectiondidchange-was-deprecated-in-ios-17-0-how-do-i-use-the-replacem
+//        bottomVStack.backgroundColor = UIScreen.main.traitCollection.userInterfaceStyle == .light ? .systemBackground : .secondarySystemBackground
+//        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (self: Self, previousTraitCollection: UITraitCollection) in
+//            self.bottomVStack.backgroundColor = switch self.traitCollection.userInterfaceStyle {
+//            case .light: .systemBackground
+//            case .dark: .secondarySystemBackground
+//            default: .systemBackground
+//            }
+//        }
         bottomVStack.clipsToBounds = true
         bottomVStack.layer.cornerRadius = 30
         bottomVStack.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
@@ -228,19 +237,12 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     }
     
     private func configureAttachment() {
-        let dashedBorder = DashedBorderView(color: .separator, lineWidth: 0.5)
+        let dashedBorder = DashedBorderView(color: .separator)
         dashedBorder.layer.cornerRadius = 16
         bottomVStack.addArrangedSubview(dashedBorder)
         dashedBorder.snp.makeConstraints { make in
             make.height.equalToSuperview().multipliedBy(0.085)
         }
-        
-        var phPickerConfig = PHPickerConfiguration(photoLibrary: .shared())
-        phPickerConfig.selectionLimit = 1
-        phPickerConfig.filter = .images
-        
-        imagePicker = PHPickerViewController(configuration: phPickerConfig)
-        imagePicker.delegate = self
         
         var config = UIButton.Configuration.plain()
         config.image = UIImage(systemName: "paperclip")
@@ -248,16 +250,36 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         config.imagePlacement = .leading
         config.imagePadding = 10
         
-        let labelButton = UIButton(configuration: config, primaryAction: UIAction { [weak self] _ in
-            guard let self else { return }
-            present(imagePicker, animated: true)
-        })
+        let labelButton = UIButton(configuration: config)
         labelButton.tintColor = .secondaryLabel
         labelButton.isUserInteractionEnabled = true
+        
+        let takePhotoAction = UIAction(title: "Take Photo", image: UIImage(systemName: "camera")) { [weak self] _ in
+            guard let self else { return }
+            Task { [weak self] in
+                guard let self else { return }
+                Task { [weak self] in
+                    guard let self, let camera = await configureCamera() else { return }
+                    present(camera, animated: true)
+                }
+            }
+        }
+        
+        let imagePicker = configurePhotoLibrary()
+        let photoLibraryAction = UIAction(title: "Photo Library", image: UIImage(systemName: "photo.on.rectangle.angled")) { [weak self] _ in
+            guard let self else { return }
+            present(imagePicker, animated: true)
+        }
+        let menu = UIMenu(children: [photoLibraryAction, takePhotoAction])
+        labelButton.menu = menu
+        labelButton.showsMenuAsPrimaryAction = true
         
         labelButton.translatesAutoresizingMaskIntoConstraints = false
         dashedBorder.addSubview(labelButton)
         labelButton.snp.makeConstraints { $0.edges.equalToSuperview() }
+        
+        selectedPhoto.translatesAutoresizingMaskIntoConstraints = false
+        selectedPhoto.isHidden = true
     }
     
     private func configureRepeat() {
@@ -267,7 +289,7 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
     private func configureContinueBtn() {
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
-        config.baseBackgroundColor = .primaryColor
+        config.baseBackgroundColor = cashflowType.color
         config.baseForegroundColor = .white
         config.buttonSize = .large
         config.title = "Continue"
@@ -303,23 +325,50 @@ class CashflowViewController: UIViewController, CashflowViewProtocol {
         let menu = UIMenu(options: .singleSelection, children: actions)
         categoryBtn.menu = menu
     }
+    
+    private func configureCamera() async -> UIImagePickerController? {
+        let camera = UIImagePickerController()
+        camera.sourceType = .camera
+        camera.cameraCaptureMode = .photo
+        camera.showsCameraControls = true
+        camera.allowsEditing = true
+        camera.delegate = self
+        
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized: return camera
+        case .denied, .restricted: return nil
+        case .notDetermined:
+            let canAcessCaptureDevice = await AVCaptureDevice.requestAccess(for: .video)
+            return canAcessCaptureDevice ? camera : nil
+        @unknown default: return nil
+        }
+    }
+    
+    private func configurePhotoLibrary() -> PHPickerViewController {
+        var phPickerConfig = PHPickerConfiguration(photoLibrary: .shared())
+        phPickerConfig.selectionLimit = 1
+        phPickerConfig.filter = .images
+        
+        let imagePicker = PHPickerViewController(configuration: phPickerConfig)
+        imagePicker.delegate = self
+        
+        return imagePicker
+    }
 }
 
-extension CashflowViewController: UITextFieldDelegate {
+extension UpsertCashflowViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField,
                    shouldChangeCharactersIn range: NSRange,
                    replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
-        let prospective = (currentText as NSString).replacingCharacters(in: range, with: string)
-        let decimalSeparator = Locale.current.decimalSeparator ?? "."
-        let separator = NSRegularExpression.escapedPattern(for: decimalSeparator)
-        let pattern = "^\\d*(?:\(separator)\\d{0,2})?$"
+        let newText = (currentText as NSString).replacingCharacters(in: range, with: string)
         
-        return prospective.range(of: pattern, options: .regularExpression) != nil
+        guard let presenter else { return false }
+        return presenter.validateValueIfDecimal(value: newText)
     }
 }
 
-extension CashflowViewController: UITextViewDelegate {
+extension UpsertCashflowViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == .secondaryLabel {
             textView.text = nil
@@ -335,12 +384,36 @@ extension CashflowViewController: UITextViewDelegate {
     }
 }
 
-extension CashflowViewController: PHPickerViewControllerDelegate {
+extension UpsertCashflowViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        guard let itemProvider = results.first?.itemProvider else { return }
+        if !itemProvider.canLoadObject(ofClass: UIImage.self) { return }
+        
+        itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+            if error != nil { return }
+            guard let self, let selectedImage = image as? UIImage else { return }
+            
+            DispatchQueue.main.async {
+                self.selectedPhoto.isHidden = false
+                self.selectedPhoto.image = selectedImage
+                self.bottomVStack.addArrangedSubview(self.selectedPhoto)
+            }
+        }
+    }
+}
+
+extension UpsertCashflowViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
     }
 }
 
 #Preview {
-    CashflowViewController(cashflowType: .credit)
+    UpsertCashflowViewController(cashflowType: .credit)
 }
