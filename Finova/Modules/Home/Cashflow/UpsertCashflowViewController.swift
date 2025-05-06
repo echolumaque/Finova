@@ -29,7 +29,9 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
     private let accountBtn = MenuButton(frame: .zero)
     private let categoryLabel = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .body, weight: .regular))
     private let categoryBtn = MenuButton(frame: .zero)
+    private let dashedBorder = DashedBorderView(color: .separator)
     private let selectedPhoto = UIImageView(frame: .zero)
+    private var addAttachmentView = AddAttachmentView(menu: UIMenu())
     
     init(cashflowType: CashflowType) {
         self.cashflowType = cashflowType
@@ -60,6 +62,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         configureDescription()
         configureAttachment()
         configureRepeat()
+        configureSelectedAttachments()
         configureContinueBtn()
         
         presenter?.viewDidLoad()
@@ -124,6 +127,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         bottomVStack.axis = .vertical
         bottomVStack.spacing = 40
         bottomVStack.backgroundColor = .systemBackground
+        bottomVStack.alignment = .leading
         // More reference: https://stackoverflow.com/questions/77475103/traitcollectiondidchange-was-deprecated-in-ios-17-0-how-do-i-use-the-replacem
 //        bottomVStack.backgroundColor = UIScreen.main.traitCollection.userInterfaceStyle == .light ? .systemBackground : .secondarySystemBackground
 //        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (self: Self, previousTraitCollection: UITraitCollection) in
@@ -159,6 +163,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         bottomVStack.addArrangedSubview(accountStackView)
         accountStackView.snp.makeConstraints { make in
             make.height.equalToSuperview().multipliedBy(0.085)
+            make.horizontalEdges.equalToSuperview { $0.layoutMarginsGuide.snp.horizontalEdges }
         }
         
         accountLabel.text = "Account"
@@ -191,6 +196,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         bottomVStack.addArrangedSubviews(categoryStackView)
         categoryStackView.snp.makeConstraints { make in
             make.height.equalToSuperview().multipliedBy(0.085)
+            make.horizontalEdges.equalToSuperview { $0.layoutMarginsGuide.snp.horizontalEdges }
         }
         
         categoryLabel.text = "Category"
@@ -233,15 +239,16 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         bottomVStack.addArrangedSubview(descriptionTextView)
         descriptionTextView.snp.makeConstraints { make in
             make.height.equalToSuperview().multipliedBy(0.15)
+            make.horizontalEdges.equalToSuperview { $0.layoutMarginsGuide.snp.horizontalEdges }
         }
     }
     
     private func configureAttachment() {
-        let dashedBorder = DashedBorderView(color: .separator)
         dashedBorder.layer.cornerRadius = 16
         bottomVStack.addArrangedSubview(dashedBorder)
         dashedBorder.snp.makeConstraints { make in
             make.height.equalToSuperview().multipliedBy(0.085)
+            make.horizontalEdges.equalToSuperview { $0.layoutMarginsGuide.snp.horizontalEdges }
         }
         
         var config = UIButton.Configuration.plain()
@@ -277,13 +284,37 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         labelButton.translatesAutoresizingMaskIntoConstraints = false
         dashedBorder.addSubview(labelButton)
         labelButton.snp.makeConstraints { $0.edges.equalToSuperview() }
-        
-        selectedPhoto.translatesAutoresizingMaskIntoConstraints = false
-        selectedPhoto.isHidden = true
     }
     
     private func configureRepeat() {
         
+    }
+    
+    private func configureSelectedAttachments() {
+        selectedPhoto.translatesAutoresizingMaskIntoConstraints = false
+        bottomVStack.setCustomSpacing(20, after: dashedBorder)
+        
+        let takePhotoAction = UIAction(title: "Take Photo", image: UIImage(systemName: "camera")) { [weak self] _ in
+            guard let self else { return }
+            Task { [weak self] in
+                guard let self else { return }
+                Task { [weak self] in
+                    guard let self, let camera = await configureCamera() else { return }
+                    present(camera, animated: true)
+                }
+            }
+        }
+        
+        let imagePicker = configurePhotoLibrary()
+        let photoLibraryAction = UIAction(title: "Photo Library", image: UIImage(systemName: "photo.on.rectangle.angled")) { [weak self] _ in
+            guard let self else { return }
+            present(imagePicker, animated: true)
+        }
+        let menu = UIMenu(children: [photoLibraryAction, takePhotoAction])
+        addAttachmentView = AddAttachmentView(menu: menu)
+        
+        bottomVStack.addArrangedSubview(addAttachmentView)
+        addAttachmentView.snp.makeConstraints { $0.width.equalTo(addAttachmentView.snp.height) }
     }
     
     private func configureContinueBtn() {
@@ -295,7 +326,12 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         config.title = "Continue"
         
         let continueBtn = UIButton(configuration: config, primaryAction: nil)
-        bottomVStack.addArrangedSubviews(SpacerView(), continueBtn)
+        bottomVStack.addArrangedSubview(continueBtn)
+        bottomVStack.setCustomSpacing(20, after: addAttachmentView)
+        continueBtn.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview { $0.layoutMarginsGuide.snp.horizontalEdges }
+            make.height.equalTo(54)
+        }
     }
     
     func configureAccountMenuData(_ accounts: [Account]) {
@@ -396,9 +432,37 @@ extension UpsertCashflowViewController: PHPickerViewControllerDelegate {
             guard let self, let selectedImage = image as? UIImage else { return }
             
             DispatchQueue.main.async {
-                self.selectedPhoto.isHidden = false
+                guard let oldViewIndex = self.bottomVStack.arrangedSubviews.firstIndex(of: self.addAttachmentView) else { return }
+                
+                self.bottomVStack.removeArrangedSubview(self.addAttachmentView)
+                self.addAttachmentView.removeFromSuperview()
+                
+                let container = UIView(frame: .zero)
+                container.layer.cornerRadius = 8
+                container.clipsToBounds = true
+                container.translatesAutoresizingMaskIntoConstraints = false
+                
+                self.bottomVStack.insertArrangedSubview(container, at: oldViewIndex)
+                container.snp.makeConstraints { $0.height.equalTo(container.snp.width).multipliedBy(2) }
+                
                 self.selectedPhoto.image = selectedImage
-                self.bottomVStack.addArrangedSubview(self.selectedPhoto)
+                self.selectedPhoto.layer.cornerRadius = 8
+                self.selectedPhoto.clipsToBounds = true
+                container.addSubview(self.selectedPhoto)
+                self.selectedPhoto.snp.makeConstraints { $0.edges.equalToSuperview() }
+                
+                var closeBtnConfig = UIButton.Configuration.plain()
+                closeBtnConfig.image = UIImage(systemName: "xmark.circle.fill")
+                closeBtnConfig.baseForegroundColor = .systemGray
+                
+                let closeBtn = UIButton(configuration: closeBtnConfig)
+                closeBtn.translatesAutoresizingMaskIntoConstraints = false
+                container.addSubview(closeBtn)
+                container.bringSubviewToFront(closeBtn)
+                closeBtn.snp.makeConstraints { make in
+                    make.trailing.equalToSuperview().inset(-10)
+                    make.top.equalToSuperview()
+                }
             }
         }
     }
