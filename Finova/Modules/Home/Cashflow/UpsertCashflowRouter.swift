@@ -6,15 +6,52 @@
 //
 
 import UIKit
+import PhotosUI
 import Swinject
 
 typealias UpsertCashflowEntryPoint = UpsertCashflowViewProtocol & UIViewController
 
 protocol UpsertCashflowRouter: AnyObject {
     var view: UpsertCashflowEntryPoint? { get }
+    
+    func presentCamera() async
+    func presentPhotoLibrary()
 }
 
 class UpsertCashflowRouterImpl: UpsertCashflowRouter {
     weak var view: UpsertCashflowEntryPoint? { upsertCashflowViewController }
     var upsertCashflowViewController: UpsertCashflowEntryPoint?
+    
+    func presentCamera() async {
+        let camera: (authStatus: AVAuthorizationStatus, actual: UIImagePickerController) = await MainActor.run {
+            let camera = UIImagePickerController()
+            camera.sourceType = .camera
+            camera.cameraCaptureMode = .photo
+            camera.showsCameraControls = true
+            camera.allowsEditing = true
+            camera.delegate = (upsertCashflowViewController as? UINavigationControllerDelegate & UIImagePickerControllerDelegate)
+            
+            return (AVCaptureDevice.authorizationStatus(for: .video), camera)
+        }
+        
+        if camera.authStatus == .authorized {
+            await upsertCashflowViewController?.present(camera.actual, animated: true)
+        } else if camera.authStatus == .notDetermined {
+            if await AVCaptureDevice.requestAccess(for: .video) {
+                await upsertCashflowViewController?.present(camera.actual, animated: true)
+            }
+        }
+    }
+    
+    func presentPhotoLibrary() {
+        guard let upsertCashflowViewController else { return }
+       
+        var phPickerConfig = PHPickerConfiguration(photoLibrary: .shared())
+        phPickerConfig.selectionLimit = 1
+        phPickerConfig.filter = .images
+        
+        let imagePicker = PHPickerViewController(configuration: phPickerConfig)
+        imagePicker.delegate = (upsertCashflowViewController as? PHPickerViewControllerDelegate)
+        upsertCashflowViewController.present(imagePicker, animated: true)
+    }
 }

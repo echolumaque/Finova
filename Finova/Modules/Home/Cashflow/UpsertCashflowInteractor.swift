@@ -5,7 +5,7 @@
 //  Created by Jhericoh Janquill Lumaque on 4/29/25.
 //
 
-import Foundation
+import UIKit
 
 protocol UpsertCashflowInteractor: AnyObject {
     var presenter: UpsertCashflowPresenter? { get set }
@@ -15,6 +15,7 @@ protocol UpsertCashflowInteractor: AnyObject {
     
     func getCategories() async -> [Category]
     func selectCategory(_ category: Category)
+    func loadImage(from provider: NSItemProvider) async throws -> UIImage
 }
 
 class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
@@ -51,5 +52,21 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
     
     func selectCategory(_ category: Category) {
         selectedCategory = category
+    }
+    
+    func loadImage(from provider: NSItemProvider) async throws -> UIImage {
+        try await withCheckedThrowingContinuation { continuation in
+            provider.loadObject(ofClass: UIImage.self) { object, error in
+                if let error { continuation.resume(throwing: error) }
+                else if let image = object as? UIImage { continuation.resume(returning: image) }
+                else {
+                    continuation.resume(throwing: NSError(
+                        domain: "UpsertCashflow",
+                        code: 0,
+                        userInfo: [NSLocalizedDescriptionKey: "Unexpected object type"]
+                    ))
+                }
+            }
+        }
     }
 }
