@@ -75,4 +75,40 @@ actor CoreDataStack: ObservableObject {
 //                                             error: error)
         }
     }
+    
+    func performInMainContext<T>(_ block: @escaping (NSManagedObjectContext) async throws -> T) async throws -> T {
+        let mainContext = container.viewContext
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            mainContext.perform {
+                Task {
+                    do {
+                        let result = try await block(mainContext)
+                        continuation.resume(returning: result)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }
+    }
+    
+    func performInBgContext<T>(_ block: @escaping (NSManagedObjectContext) async throws -> T, shouldSave: Bool = true) async throws -> T {
+        let bgContext = container.newBackgroundContext()
+        bgContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            bgContext.perform {
+                Task {
+                    do {
+                        let result = try await block(bgContext)
+                        if bgContext.hasChanges && shouldSave { try bgContext.save() }
+                        continuation.resume(returning: result)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }
+    }
 }

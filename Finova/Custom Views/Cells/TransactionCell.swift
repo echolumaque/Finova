@@ -128,7 +128,7 @@ class TransactionCell: UICollectionViewCell {
         
         transactionTitle.text = transaction.category?.name ?? "Unavailable"
         
-        transactionDesc.text = transaction.category?.details ?? "Unavailable"
+        transactionDesc.text = transaction.desc ?? "Unavailable"
         
 
         transactionCost.textColor = cashflowType.color

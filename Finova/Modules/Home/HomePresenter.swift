@@ -13,6 +13,7 @@ protocol HomePresenter: AnyObject {
     var view: HomeView? { get set }
     
     func gotoAddCashflow(cashflowType: CashflowType)
+    func getTransactions() async 
     func getPredefinedAccounts() async
     func getPrdefinedTransactions() async
 }
@@ -25,6 +26,11 @@ class HomePresenterImpl: HomePresenter {
     func getPredefinedAccounts() async {
         let predefinedAccounts = await interactor?.getPredefinedAccounts() ?? []
         view?.updateAccounts(predefinedAccounts)
+    }
+    
+    func getTransactions() async {
+        let transactions = await interactor?.getTransactions() ?? []
+        view?.updateTransactions(transactions)
     }
     
     func getPrdefinedTransactions() async {

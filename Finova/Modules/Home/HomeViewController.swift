@@ -51,7 +51,8 @@ class HomeViewController: UIViewController, HomeView {
         Task { [weak self] in
             guard let self else { return }
 //            await presenter?.getPredefinedAccounts()
-            await presenter?.getPrdefinedTransactions()
+//            await presenter?.getPrdefinedTransactions()
+            await presenter?.getTransactions()
         }
     }
     

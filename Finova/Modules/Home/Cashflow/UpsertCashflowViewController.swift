@@ -14,14 +14,14 @@ protocol UpsertCashflowViewProtocol: AnyObject {
     
     func configureAccountMenuData(_ accounts: [Account])
     func configureCategories(_ categories: [Category])
-    func displayAttachment(_ image: UIImage, at index: Int) async
+    func displayAttachment(_ image: UIImage) async
+    func removeAttachment(_ identifier: String)
 }
 
 class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol {
     private let horizontalPadding: CGFloat = 20
     private let verticalPadding: CGFloat = 8
     private let cashflowType: CashflowType
-    private var selectedAssetIdentifier: [String] = []
     
     var presenter: UpsertCashflowPresenter?
     
@@ -299,7 +299,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         addAttachmentView = AddAttachmentView(menu: menu)
         
         bottomVStack.addArrangedSubviews(addAttachmentView)
-        addAttachmentView.snp.makeConstraints { $0.width.equalTo(addAttachmentView.snp.height) }
+        addAttachmentView.snp.makeConstraints { $0.size.equalTo(120) }
     }
     
     private func configureContinueBtn() {
@@ -314,10 +314,9 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
             guard let self, let presenter else { return }
             presenter.didTapContinue()
         })
-        bottomVStack.addArrangedSubview(continueBtn)
+        bottomVStack.addArrangedSubviews(SpacerView(), continueBtn)
         continueBtn.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview { $0.layoutMarginsGuide.snp.horizontalEdges }
-            make.height.equalTo(54)
         }
     }
     
@@ -349,7 +348,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         categoryBtn.menu = menu
     }
     
-    func displayAttachment(_ image: UIImage, at index: Int) async {
+    func displayAttachment(_ image: UIImage) async {
         await MainActor.run {
             guard let oldViewIndex = bottomVStack.arrangedSubviews.firstIndex(of: addAttachmentView) else { return }
             
@@ -362,14 +361,16 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
             container.translatesAutoresizingMaskIntoConstraints = false
             
             bottomVStack.insertArrangedSubview(container, at: oldViewIndex)
-            container.snp.makeConstraints { $0.height.equalTo(container.snp.width) }
+            container.setContentHuggingPriority(.defaultHigh, for: .vertical)
+            container.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+            container.snp.makeConstraints { $0.size.equalTo(120) }
             
             selectedPhoto = UIImageView(image: image)
             selectedPhoto.layer.cornerRadius = 8
             selectedPhoto.clipsToBounds = true
             selectedPhoto.translatesAutoresizingMaskIntoConstraints = false
             container.addSubview(selectedPhoto)
-            selectedPhoto.snp.makeConstraints { $0.edges.equalToSuperview() }
+            selectedPhoto.snp.makeConstraints { $0.edges.equalTo(container) }
             
             var closeBtnConfig = UIButton.Configuration.plain()
             closeBtnConfig.image = UIImage(systemName: "xmark.circle.fill")
@@ -377,10 +378,11 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
             closeBtnConfig.buttonSize = .mini
             
             let action = UIAction { [weak self] _ in
-                guard let self, let containerViewIndex = bottomVStack.arrangedSubviews.firstIndex(of: container) else { return }
-                imagePicker.deselectAssets(withIdentifiers: selectedAssetIdentifier)
-                selectedAssetIdentifier.removeFirst()
-                selectedPhoto.image = nil
+                guard let self,
+                      let presenter,
+                      let containerViewIndex = bottomVStack.arrangedSubviews.firstIndex(of: container) else { return }
+                
+                presenter.didRemoveAttachment()
                 bottomVStack.removeArrangedSubview(container)
                 container.removeFromSuperview()
                 bottomVStack.insertArrangedSubview(addAttachmentView, at: containerViewIndex)
@@ -395,6 +397,11 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
                 make.top.equalToSuperview()
             }
         }
+    }
+    
+    func removeAttachment(_ identifier: String) {
+        imagePicker.deselectAssets(withIdentifiers: [identifier])
+        selectedPhoto.image = nil
     }
 }
 
@@ -427,20 +434,23 @@ extension UpsertCashflowViewController: UITextViewDelegate {
     }
 }
 
-extension UpsertCashflowViewController: PHPickerViewControllerDelegate {
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        picker.dismiss(animated: true)
-        presenter?.didPickAttachments(results)
-    }
-}
-
 extension UpsertCashflowViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        guard let presenter, let pickedImage = info[.originalImage] as? UIImage else { return }
         
+        Task { await presenter.didPickAttachmentFromCamera(pickedImage) }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
+    }
+}
+
+extension UpsertCashflowViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        presenter?.didPickAttachmentFromLibrary(results)
     }
 }
 

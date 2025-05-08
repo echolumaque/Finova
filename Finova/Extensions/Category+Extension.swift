@@ -1,5 +1,5 @@
 //
-//  TransactionType+Extension.swift
+//  Category+Extension.swift
 //  Finova
 //
 //  Created by Jhericoh Janquill Lumaque on 4/22/25.
@@ -11,7 +11,6 @@ import CoreData
 extension Category {
     convenience init(
         typeId: UUID,
-        details: String,
         cashflowType: CashflowType,
         name: String,
         logo: String,
@@ -20,7 +19,6 @@ extension Category {
         let entity = NSEntityDescription.entity(forEntityName: "Category", in: context)!
         self.init(entity: entity, insertInto: context)
         self.typeId = typeId
-        self.details = details
         self.cashflowType = cashflowType.encode()
         self.name = name
         self.logo = logo
@@ -28,88 +26,68 @@ extension Category {
     
     static func getPredefinedTransactions(in context: NSManagedObjectContext) -> [Category] {
         // (name, description, cashflowType, sfSymbolName)
-        let predefinedCategories: [(name: String, details: String, cashflowType: CashflowType, logo: String)] = [
+        let predefinedCategories: [(name: String, cashflowType: CashflowType, logo: String)] = [
             // Credit-only
             ("Salary & Wages",
-             "Income earned from employment, including base salary, bonuses, commissions, and overtime.",
              .credit,
              "banknote.fill"),
             ("Interest Income",
-             "Earnings from interest-bearing accounts and investments such as savings accounts, CDs, or bonds.",
              .credit,
              "percent"),
             ("Dividends",
-             "Distributions received from stock holdings or mutual funds.",
              .credit,
              "chart.pie.fill"),
             ("Refunds & Rebates",
-             "Money returned from purchases, returns, or promotional rebates.",
              .credit,
              "arrow.uturn.left.circle.fill"),
             ("Loan Proceeds",
-             "Funds received when originating a new loan (e.g., personal, auto, or mortgage).",
              .credit,
              "building.columns.fill"),
             ("Investment Gains",
-             "Profits realized from the sale of stocks, bonds, or other securities.",
              .credit,
              "chart.line.uptrend.xyaxis"),
             ("Rental Income",
-             "Payments received from leasing residential or commercial property.",
              .credit,
              "house.fill"),
             ("Gift Received",
-             "Monetary gifts received from friends, family, or other parties.",
              .credit,
              "gift.fill"),
             ("Tax Refund",
-             "Payments returned by government agencies when you’ve overpaid taxes.",
              .credit,
              "doc.text.fill"),
             ("Reimbursements",
-             "Repayments for expenses you paid on behalf of others or for work-related costs.",
              .credit,
              "creditcard.fill"),
             
             // Debit-only
             ("Housing (Rent/Mortgage)",
-             "Payments for rent or mortgage obligations on residential or commercial property.",
              .debit,
              "house.fill"),
             ("Utilities (Electric, Water, Internet)",
-             "Bills for essential services like electricity, water, gas, and Internet access.",
              .debit,
              "bolt.fill"),
             ("Groceries & Household",
-             "Purchases of food, cleaning supplies, and other household necessities.",
              .debit,
              "cart.fill"),
             ("Transportation (Fuel, Public Transit)",
-             "Fuel, public-transit fares, ride-shares, and basic vehicle maintenance.",
              .debit,
              "car.fill"),
             ("Dining & Entertainment",
-             "Spending on restaurants, bars, movies, concerts, and other leisure activities.",
              .debit,
              "fork.knife"),
             ("Healthcare & Insurance",
-             "Medical bills, prescription costs, and insurance premiums.",
              .debit,
              "stethoscope"),
             ("Education & Tuition",
-             "Tuition payments, books, and fees for courses or training programs.",
              .debit,
              "book.fill"),
             ("Subscriptions & Memberships",
-             "Recurring fees for streaming services, gyms, magazines, etc.",
              .debit,
              "repeat.circle.fill"),
             ("Personal Care & Clothing",
-             "Grooming, cosmetics, apparel, and accessories.",
              .debit,
              "tshirt.fill"),
             ("Miscellaneous Shopping",
-             "Discretionary spending on gifts, gadgets, or other non-essential items.",
              .debit,
              "bag.fill")
         ]
@@ -117,12 +95,47 @@ extension Category {
         return predefinedCategories.map { info in
             Category(
                 typeId: UUID(),
-                details: info.details,
                 cashflowType: info.cashflowType,
                 name: info.name,
                 logo: info.logo,
                 in: context
             )
         }.shuffled()
+    }
+}
+
+extension Category {
+    var sampleDescriptions: [String] {
+        switch name {
+        case "Salary & Wages": return ["Monthly salary payment", "Bi-weekly paycheck"]
+        case "Interest Income": return ["Savings account interest", "CD dividend payout"]
+        case "Dividends": return ["Quarterly dividend", "ETF dividend distribution"]
+        case "Refunds & Rebates": return ["Product refund", "Tax rebate credit"]
+        case "Loan Proceeds": return ["Personal loan received", "Line-of-credit advance"]
+        case "Investment Gains": return ["Stock sale profit", "Crypto trade gain"]
+        case "Rental Income": return ["April rent", "Lease payment"]
+        case "Gift Received": return ["Birthday gift", "Anniversary gift"]
+        case "Tax Refund": return ["IRS refund", "State tax refund"]
+        case "Reimbursements": return ["Expense reimbursement", "Travel cost paid back"]
+            
+        case "Housing (Rent/Mortgage)": return ["Monthly rent", "Mortgage payment"]
+        case "Utilities (Electric, Water, Internet)": return ["Electric bill", "Water bill", "Internet subscription"]
+        case "Groceries & Household": return ["Grocery store",  "Supermarket run"]
+        case "Transportation (Fuel, Public Transit)": return ["Gas station", "Bus fare"]
+        case "Dining & Entertainment": return ["Restaurant dinner", "Movie tickets"]
+        case "Healthcare & Insurance": return ["Doctor’s visit", "Health insurance premium"]
+        case "Education & Tuition": return ["Semester tuition", "Online course fee"]
+        case "Subscriptions & Memberships": return ["Streaming service", "Gym membership"]
+        case "Personal Care & Clothing": return ["Clothing purchase", "Salon visit"]
+        case "Miscellaneous Shopping": return ["Mall shopping", "Online order"]
+            
+        default:
+            return [name ?? "Unavailable"]
+        }
+    }
+    
+    /// Pick one of the sample descriptions at random.
+    func randomDescription() -> String {
+        sampleDescriptions.randomElement() ?? name ?? "Unavailable"
     }
 }

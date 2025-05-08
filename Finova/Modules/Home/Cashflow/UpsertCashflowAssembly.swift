@@ -14,7 +14,8 @@ class UpsertCashflowAssembly: Assembly {
             let view = UpsertCashflowViewController(cashflowType: cashflowType)
             let interactor = UpsertCashflowInteractorImpl(
                 accountService: resolver.resolve(AccountService.self)!,
-                categoryService: resolver.resolve(CategoryService.self)!
+                categoryService: resolver.resolve(CategoryService.self)!,
+                transactionService: resolver.resolve(TransactionService.self)!
             )
             let presenter = UpsertCashflowPresenterImpl()
             let router = UpsertCashflowRouterImpl()

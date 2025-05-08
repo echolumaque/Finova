@@ -16,19 +16,28 @@ protocol UpsertCashflowInteractor: AnyObject {
     func getCategories() async -> [Category]
     func selectCategory(_ category: Category)
     func loadImage(from provider: NSItemProvider) async throws -> UIImage
+    func upsertCategory() async 
 }
 
 class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
     private let accountService: AccountService
     private let categoryService: CategoryService
+    private let transactionService: TransactionService
     
     weak var presenter: (any UpsertCashflowPresenter)?
     private var selectedAccount: Account?
     private var selectedCategory: Category?
+    private var value: Double = 0.0
+    private var description: String = ""
     
-    init(accountService: AccountService, categoryService: CategoryService) {
+    init(
+        accountService: AccountService,
+        categoryService: CategoryService,
+        transactionService: TransactionService
+    ) {
         self.accountService = accountService
         self.categoryService = categoryService
+        self.transactionService = transactionService
     }
     
     func getAccounts() async -> [Account] {
@@ -68,5 +77,16 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
                 }
             }
         }
+    }
+    
+    func upsertCategory() async {
+        guard let selectedAccount, let selectedCategory else { return }
+        await transactionService.upsertTransaction(
+            transaction: nil,
+            account: selectedAccount,
+            category: selectedCategory,
+            value: value,
+            desc: description
+        )
     }
 }

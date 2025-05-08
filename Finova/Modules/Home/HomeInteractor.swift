@@ -10,6 +10,7 @@ import Foundation
 protocol HomeInteractor: AnyObject {
     var presenter: HomePresenter? { get set }
     func getPredefinedAccounts() async -> [Account]
+    func getTransactions() async -> [Transaction] 
     func getPrdefinedTransactions() async -> [Transaction]
 }
 
@@ -27,6 +28,11 @@ class HomeInteractorImpl: HomeInteractor {
     func getPredefinedAccounts() async -> [Account] {
         let predefinedAccounts = await accountService.getPredefinedAccounts()
         return predefinedAccounts
+    }
+    
+    func getTransactions() async -> [Transaction] {
+        let transactions = await transactionService.getTransactionsOn()
+        return transactions
     }
     
     func getPrdefinedTransactions() async -> [Transaction] {

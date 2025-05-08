@@ -21,9 +21,10 @@ protocol UpsertCashflowPresenter: AnyObject {
     func didFinishedEnteringDescription(description: String)
     func getCameraController() async -> CameraController?
     func presentCamera() async
+    func didPickAttachmentFromCamera(_ image: UIImage) async
     func presentPhotoLibrary()
-    func didPickAttachments(_ results: [PHPickerResult])
-    func didRemoveAttachment(at index: Int)
+    func didPickAttachmentFromLibrary(_ results: [PHPickerResult])
+    func didRemoveAttachment()
     func didTapContinue()
 }
 
@@ -78,26 +79,33 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
         await router?.presentCamera()
     }
     
+    func didPickAttachmentFromCamera(_ image: UIImage) async {
+        await view?.displayAttachment(image)
+    }
+    
     func presentPhotoLibrary() {
         router?.presentPhotoLibrary()
     }
     
-    func didPickAttachments(_ results: [PHPickerResult]) {
+    func didPickAttachmentFromLibrary(_ results: [PHPickerResult]) {
         Task {
-            guard let itemProvider = results.first?.itemProvider,
-                  itemProvider.canLoadObject(ofClass: UIImage.self) else { return }
+            guard let firstItem = results.first,
+                  let assetIdentifier = firstItem.assetIdentifier,
+                  firstItem.itemProvider.canLoadObject(ofClass: UIImage.self) else { return }
             
             do {
-                guard let image = try await interactor?.loadImage(from: itemProvider) else { return }
-                await view?.displayAttachment(image, at: 0)
+                guard let image = try await interactor?.loadImage(from: firstItem.itemProvider) else { return }
+                selectedAssetIdentifiers.append(assetIdentifier)
+                await view?.displayAttachment(image)
             } catch {
                 
             }
         }
     }
     
-    func didRemoveAttachment(at index: Int) {
-        
+    func didRemoveAttachment() {
+        let removedIdentifier = selectedAssetIdentifiers.removeFirst()
+        view?.removeAttachment(removedIdentifier)
     }
     
     func didTapContinue() {
