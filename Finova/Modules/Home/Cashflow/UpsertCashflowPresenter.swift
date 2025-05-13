@@ -14,18 +14,18 @@ protocol UpsertCashflowPresenter: AnyObject {
     var view: UpsertCashflowViewProtocol? { get set }
     
     func viewDidLoad()
-    func didFinishedEnteringValue(value: Double)
+    func didFinishedEnteringValue(_ value: String)
     func validateValueIfDecimal(value: String) -> Bool
     func selectAccount(_ account: Account)
     func selectCategory(_ category: Category)
-    func didFinishedEnteringDescription(description: String)
+    func didFinishedEnteringDescription(_ description: String)
     func getCameraController() async -> CameraController?
     func presentCamera() async
     func didPickAttachmentFromCamera(_ image: UIImage) async
     func presentPhotoLibrary()
     func didPickAttachmentFromLibrary(_ results: [PHPickerResult])
     func didRemoveAttachment()
-    func didTapContinue()
+    func didTapContinue() async
 }
 
 class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
@@ -46,8 +46,8 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
         }
     }
     
-    func didFinishedEnteringValue(value: Double) {
-        
+    func didFinishedEnteringValue(_ value: String) {
+        interactor?.didFinishedEnteringValue(value)
     }
     
     func validateValueIfDecimal(value: String) -> Bool {
@@ -66,8 +66,8 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
         interactor?.selectCategory(category)
     }
     
-    func didFinishedEnteringDescription(description: String) {
-        
+    func didFinishedEnteringDescription(_ description: String) {
+        interactor?.didFinishedEnteringDescription(description)
     }
     
     func getCameraController() async -> CameraController? {
@@ -81,6 +81,7 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
     
     func didPickAttachmentFromCamera(_ image: UIImage) async {
         await view?.displayAttachment(image)
+        interactor?.selectAttachment(image)
     }
     
     func presentPhotoLibrary() {
@@ -97,6 +98,7 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
                 guard let image = try await interactor?.loadImage(from: firstItem.itemProvider) else { return }
                 selectedAssetIdentifiers.append(assetIdentifier)
                 await view?.displayAttachment(image)
+                interactor?.selectAttachment(image)
             } catch {
                 
             }
@@ -108,7 +110,8 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
         view?.removeAttachment(removedIdentifier)
     }
     
-    func didTapContinue() {
-        
+    func didTapContinue() async {
+        await interactor?.upsertCategory()
+        await router?.onTxnUpsert()
     }
 }

@@ -16,6 +16,7 @@ protocol UpsertCashflowRouter: AnyObject {
     
     func presentCamera() async
     func presentPhotoLibrary()
+    func onTxnUpsert() async
 }
 
 class UpsertCashflowRouterImpl: UpsertCashflowRouter {
@@ -29,29 +30,33 @@ class UpsertCashflowRouterImpl: UpsertCashflowRouter {
             camera.cameraCaptureMode = .photo
             camera.showsCameraControls = true
             camera.allowsEditing = true
-            camera.delegate = (upsertCashflowViewController as? UINavigationControllerDelegate & UIImagePickerControllerDelegate)
+            camera.delegate = (view as? UINavigationControllerDelegate & UIImagePickerControllerDelegate)
             
             return (AVCaptureDevice.authorizationStatus(for: .video), camera)
         }
         
         if camera.authStatus == .authorized {
-            await upsertCashflowViewController?.present(camera.actual, animated: true)
+            await view?.present(camera.actual, animated: true)
         } else if camera.authStatus == .notDetermined {
             if await AVCaptureDevice.requestAccess(for: .video) {
-                await upsertCashflowViewController?.present(camera.actual, animated: true)
+                await view?.present(camera.actual, animated: true)
             }
         }
     }
     
     func presentPhotoLibrary() {
-        guard let upsertCashflowViewController else { return }
+        guard let view else { return }
        
         var phPickerConfig = PHPickerConfiguration(photoLibrary: .shared())
         phPickerConfig.selectionLimit = 1
         phPickerConfig.filter = .images
         
         let imagePicker = PHPickerViewController(configuration: phPickerConfig)
-        imagePicker.delegate = (upsertCashflowViewController as? PHPickerViewControllerDelegate)
-        upsertCashflowViewController.present(imagePicker, animated: true)
+        imagePicker.delegate = (view as? PHPickerViewControllerDelegate)
+        view.present(imagePicker, animated: true)
+    }
+    
+    func onTxnUpsert() async {
+        _ = await MainActor.run { view?.navigationController?.popViewController(animated: true) }
     }
 }

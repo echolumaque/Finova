@@ -85,9 +85,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         let topContainer = UIView(frame: .zero)
         topContainer.translatesAutoresizingMaskIntoConstraints = false
         mainVStack.addArrangedSubview(topContainer)
-        topContainer.snp.makeConstraints { make in
-            make.height.equalToSuperview().multipliedBy(0.3)
-        }
+        topContainer.snp.makeConstraints { $0.height.equalToSuperview().multipliedBy(0.3) }
         
         let howMuchLabel = DynamicLabel(textColor: .white.withAlphaComponent(0.4), font: UIFont.preferredFont(for: .title3, weight: .semibold))
         howMuchLabel.text = "How much?"
@@ -119,8 +117,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         valueTextField.adjustsFontForContentSizeCategory = true
         valueTextField.inputAccessoryView = textFieldToolbar { [weak self] in
             guard let self, let presenter else { return }
-            let parsedValue = Double(valueTextField.text ?? "") ?? .zero
-            presenter.didFinishedEnteringValue(value: parsedValue)
+            presenter.didFinishedEnteringValue(valueTextField.text ?? "")
         }
         
         valueTextField.placeholder = "0"
@@ -228,7 +225,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         descriptionTextView.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
         descriptionTextView.inputAccessoryView = textFieldToolbar { [weak self] in
             guard let self, let presenter else { return }
-            presenter.didFinishedEnteringDescription(description: descriptionTextView.text)
+            presenter.didFinishedEnteringDescription(descriptionTextView.text)
         }
         
         descriptionTextView.layer.cornerRadius = 16
@@ -312,7 +309,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         
         let continueBtn = UIButton(configuration: config, primaryAction: UIAction { [weak self] _ in
             guard let self, let presenter else { return }
-            presenter.didTapContinue()
+            Task { await presenter.didTapContinue() }
         })
         bottomVStack.addArrangedSubviews(SpacerView(), continueBtn)
         continueBtn.snp.makeConstraints { make in
@@ -345,6 +342,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         }
         
         let menu = UIMenu(options: .singleSelection, children: actions)
+        menu.displayPreferences?.maximumNumberOfTitleLines = 1
         categoryBtn.menu = menu
     }
     
@@ -415,6 +413,8 @@ extension UpsertCashflowViewController: UITextFieldDelegate {
         guard let presenter else { return false }
         return presenter.validateValueIfDecimal(value: newText)
     }
+    
+    
 }
 
 extension UpsertCashflowViewController: UITextViewDelegate {
@@ -430,7 +430,7 @@ extension UpsertCashflowViewController: UITextViewDelegate {
             textView.text = "Description"
             textView.textColor = .secondaryLabel
         }
-        presenter?.didFinishedEnteringDescription(description: textView.text)
+        presenter?.didFinishedEnteringDescription(textView.text)
     }
 }
 

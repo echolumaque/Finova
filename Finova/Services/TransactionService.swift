@@ -5,7 +5,9 @@
 //  Created by Jhericoh Janquill Lumaque on 4/22/25.
 //
 
+import CoreData
 import Foundation
+import UIKit
 
 actor TransactionService {
     private let coreDataStack: CoreDataStack
@@ -41,7 +43,8 @@ actor TransactionService {
         account: Account,
         category: Category,
         value: Double,
-        desc: String
+        desc: String,
+        attachment: Data?
     ) async {
         do {
             try await coreDataStack.performInBgContext { bgContext in
@@ -57,8 +60,46 @@ actor TransactionService {
                 txnInCtx.account = try bgContext.existingObject(with: account.objectID) as? Account
                 txnInCtx.category = try bgContext.existingObject(with: category.objectID) as? Category
                 txnInCtx.value = value
-                txnInCtx.desc = desc
+                txnInCtx.desc = desc.trimmingCharacters(in: .whitespacesAndNewlines)
+                txnInCtx.attachment = attachment
             }
+        } catch {
+            
+        }
+    }
+}
+
+@MainActor
+final class TransasctionFRCManager: NSObject, NSFetchedResultsControllerDelegate {
+    private let viewContext: NSManagedObjectContext
+    private lazy var frc: NSFetchedResultsController<Transaction> = {
+        let request = Transaction.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Transaction.date, ascending: false)]
+        let controller = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: viewContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        controller.delegate = self
+        
+        return controller
+    }()
+    
+    var onInitialSnapshot: (([Transaction]) -> Void)?
+    var onSnapshotChange: ((NSDiffableDataSourceSnapshot<Section, Transaction>) -> Void)?
+    
+    init(viewContext: NSManagedObjectContext) {
+        self.viewContext = viewContext
+        super.init()
+    }
+    
+    @available(iOS 15.0, *)
+    func start() {
+        do {
+            try frc.performFetch()
+            let initial = frc.fetchedObjects ?? []
+            onInitialSnapshot?(initial)
         } catch {
             
         }

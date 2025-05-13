@@ -10,11 +10,18 @@ import UIKit
 protocol UpsertCashflowInteractor: AnyObject {
     var presenter: UpsertCashflowPresenter? { get set }
     
+    func didFinishedEnteringValue(_ value: String)
+    
     func getAccounts() async -> [Account]
     func selectAccount(_ account: Account)
     
     func getCategories() async -> [Category]
     func selectCategory(_ category: Category)
+    
+    func didFinishedEnteringDescription(_ description: String)
+    
+    func selectAttachment(_ attachment: UIImage)
+    
     func loadImage(from provider: NSItemProvider) async throws -> UIImage
     func upsertCategory() async 
 }
@@ -29,6 +36,7 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
     private var selectedCategory: Category?
     private var value: Double = 0.0
     private var description: String = ""
+    private var selectedAttachment: Data?
     
     init(
         accountService: AccountService,
@@ -40,6 +48,10 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
         self.transactionService = transactionService
     }
     
+    func didFinishedEnteringValue(_ value: String) {
+        self.value = Double(value) ?? .zero
+    }
+    
     func getAccounts() async -> [Account] {
         let accounts = await accountService.getPredefinedAccounts()
         if selectedAccount == nil { selectedAccount = accounts.first }
@@ -49,7 +61,6 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
     
     func selectAccount(_ account: Account) {
         selectedAccount = account
-        print("selected account: \(account.name)")
     }
     
     func getCategories() async -> [Category] {
@@ -61,6 +72,14 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
     
     func selectCategory(_ category: Category) {
         selectedCategory = category
+    }
+    
+    func didFinishedEnteringDescription(_ description: String) {
+        self.description = description
+    }
+    
+    func selectAttachment(_ attachment: UIImage) {
+        selectedAttachment = attachment.heicData() ?? attachment.jpegData(compressionQuality: 0.8)
     }
     
     func loadImage(from provider: NSItemProvider) async throws -> UIImage {
@@ -86,7 +105,10 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
             account: selectedAccount,
             category: selectedCategory,
             value: value,
-            desc: description
+            desc: description,
+            attachment: selectedAttachment
         )
+        
+        
     }
 }
