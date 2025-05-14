@@ -5,6 +5,7 @@
 //  Created by Jhericoh Janquill Lumaque on 4/8/25.
 //
 
+import CoreData
 import UIKit
 import SnapKit
 import Swinject
@@ -13,6 +14,7 @@ protocol HomeView: AnyObject {
     var presenter: HomePresenter? { get set }
     func updateAccounts(_ accounts: [Account])
     func updateTransactions(_ transactions: [Transaction])
+    func applySnapshot( _ snapshot: NSDiffableDataSourceSnapshot<Section, Transaction>)
 }
 
 class HomeViewController: UIViewController, HomeView {
@@ -52,6 +54,8 @@ class HomeViewController: UIViewController, HomeView {
             guard let self else { return }
 //            await presenter?.getPredefinedAccounts()
 //            await presenter?.getPrdefinedTransactions()
+            
+            await presenter?.getAccounts()
             await presenter?.getTransactions()
         }
     }
@@ -134,6 +138,10 @@ class HomeViewController: UIViewController, HomeView {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Transaction>()
         snapshot.appendSections([.main])
         snapshot.appendItems(transactions)
+        DispatchQueue.main.async { self.txnDataSource.apply(snapshot, animatingDifferences: true) }
+    }
+    
+    func applySnapshot(_ snapshot: NSDiffableDataSourceSnapshot<Section, Transaction>) {
         DispatchQueue.main.async { self.txnDataSource.apply(snapshot, animatingDifferences: true) }
     }
 }

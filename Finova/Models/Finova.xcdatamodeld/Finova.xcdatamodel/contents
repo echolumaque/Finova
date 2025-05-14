@@ -22,4 +22,9 @@
         <relationship name="account" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Account"/>
         <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="transactions" inverseEntity="Category"/>
     </entity>
+    <configuration name="Local">
+        <memberEntity name="Account"/>
+        <memberEntity name="Category"/>
+        <memberEntity name="Transaction"/>
+    </configuration>
 </model>

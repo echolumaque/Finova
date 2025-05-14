@@ -14,6 +14,7 @@ class HomeAssembly: Assembly {
             let view = HomeViewController(container: resolver)
             let interactor = HomeInteractorImpl(
                 accountService: resolver.resolve(AccountService.self)!,
+                coreDataStack: resolver.resolve(CoreDataStack.self)!,
                 transactionService: resolver.resolve(TransactionService.self)!
             )
             let presenter = HomePresenterImpl()

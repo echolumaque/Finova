@@ -53,7 +53,7 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
     }
     
     func getAccounts() async -> [Account] {
-        let accounts = await accountService.getPredefinedAccounts()
+        let accounts = await accountService.getAccounts()
         if selectedAccount == nil { selectedAccount = accounts.first }
         
         return accounts
@@ -108,7 +108,5 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
             desc: description,
             attachment: selectedAttachment
         )
-        
-        
     }
 }
