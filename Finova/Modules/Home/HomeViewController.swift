@@ -7,6 +7,7 @@
 
 import CoreData
 import UIKit
+import RxSwift
 import SnapKit
 import Swinject
 
@@ -56,9 +57,10 @@ class HomeViewController: UIViewController, HomeView {
 //            await presenter?.getPrdefinedTransactions()
             
             await presenter?.getAccounts()
-            await presenter?.getTransactions()
+            await presenter?.fetchInitialTxns()
         }
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -131,14 +133,19 @@ class HomeViewController: UIViewController, HomeView {
     }
     
     func updateAccounts(_ accounts: [Account]) {
-        
+            
     }
     
     func updateTransactions(_ transactions: [Transaction]) {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Transaction>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(transactions)
-        DispatchQueue.main.async { self.txnDataSource.apply(snapshot, animatingDifferences: true) }
+        guard var currentSnapshot = txnDataSource?.snapshot() else { return }
+        if currentSnapshot.indexOfSection(.main) == nil {
+            currentSnapshot.appendSections([.main])
+        }
+        
+        currentSnapshot.appendItems(transactions, toSection: .main)
+        DispatchQueue.main.async {
+            self.txnDataSource?.apply(currentSnapshot, animatingDifferences: true)
+        }
     }
     
     func applySnapshot(_ snapshot: NSDiffableDataSourceSnapshot<Section, Transaction>) {

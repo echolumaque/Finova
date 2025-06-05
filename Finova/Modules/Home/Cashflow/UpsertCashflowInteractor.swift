@@ -23,7 +23,7 @@ protocol UpsertCashflowInteractor: AnyObject {
     func selectAttachment(_ attachment: UIImage)
     
     func loadImage(from provider: NSItemProvider) async throws -> UIImage
-    func upsertCategory() async 
+    func upsertTransaction() async
 }
 
 class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
@@ -64,7 +64,7 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
     }
     
     func getCategories() async -> [Category] {
-        let categories = await categoryService.getPredefinedCategories()
+        let categories = await categoryService.getCategories()
         if selectedCategory == nil { selectedCategory = categories.first }
         
         return categories
@@ -98,9 +98,9 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
         }
     }
     
-    func upsertCategory() async {
+    func upsertTransaction() async {
         guard let selectedAccount, let selectedCategory else { return }
-        await transactionService.upsertTransaction(
+        await transactionService.upsertTxn(
             transaction: nil,
             account: selectedAccount,
             category: selectedCategory,

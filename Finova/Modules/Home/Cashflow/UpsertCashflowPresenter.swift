@@ -111,7 +111,7 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
     }
     
     func didTapContinue() async {
-        await interactor?.upsertCategory()
+        await interactor?.upsertTransaction()
         await router?.onTxnUpsert()
     }
 }

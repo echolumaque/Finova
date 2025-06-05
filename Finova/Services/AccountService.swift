@@ -21,7 +21,7 @@ actor AccountService {
         
         do {
             try await coreDataStack.performInBgContext { context in
-                let request = Transaction.fetchRequest()
+                let request = Account.fetchRequest()
                 request.resultType = .countResultType
                 if try context.count(for: request) > 0 { return }
                 
@@ -29,7 +29,7 @@ actor AccountService {
                 for name in accountNames {
                     let account = Account(context: context)
                     account.name = name
-                    account.value = 123
+                    account.value = 0
                 }
                 
                 try context.save()

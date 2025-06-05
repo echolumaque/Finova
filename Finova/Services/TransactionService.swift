@@ -7,10 +7,14 @@
 
 import CoreData
 import Foundation
+import RxSwift
 import UIKit
 
 actor TransactionService {
     private let coreDataStack: CoreDataStack
+    
+    private let txnsUpdatedSubject = PublishSubject<Transaction?>()
+    var txnsUpdated: Observable<Transaction?> { txnsUpdatedSubject.asObservable() }
     
     init(coreDataStack: CoreDataStack) {
         self.coreDataStack = coreDataStack
@@ -38,7 +42,17 @@ actor TransactionService {
         }
     }
     
-    func upsertTransaction(
+    func fetchAllTxns() async -> [Transaction] {
+        do {
+            let txns = try await coreDataStack.performInMainContext { try $0.fetch(Transaction.fetchRequest()) }
+            return txns
+        } catch {
+            print("Error happened in fetchAllTxns: \(error)")
+            return []
+        }
+    }
+    
+    func upsertTxn(
         transaction: Transaction? = nil,
         account: Account,
         category: Category,
@@ -47,7 +61,7 @@ actor TransactionService {
         attachment: Data?
     ) async {
         do {
-            try await coreDataStack.performInBgContext { bgContext in
+            let upsertedObjId = try await coreDataStack.performInBgContext { bgContext in
                 var txnInCtx: Transaction
                 if let transaction, let fetchedTxn = try bgContext.existingObject(with: transaction.objectID) as? Transaction {
                     txnInCtx = fetchedTxn
@@ -57,14 +71,24 @@ actor TransactionService {
                     txnInCtx.date = .now
                 }
                 
-//                txnInCtx.account = try bgContext.existingObject(with: account.objectID) as? Account
-//                txnInCtx.category = try bgContext.existingObject(with: category.objectID) as? Category
+                txnInCtx.account = try bgContext.existingObject(with: account.objectID) as? Account
+                txnInCtx.category = try bgContext.existingObject(with: category.objectID) as? Category
                 txnInCtx.value = value
                 txnInCtx.desc = desc.trimmingCharacters(in: .whitespacesAndNewlines)
                 txnInCtx.attachment = attachment
+                
+                try bgContext.save()
+                return txnInCtx.objectID
             }
+            
+            let upsertedTxn = try await coreDataStack.performInMainContext { context in
+                try? context.existingObject(with: upsertedObjId) as? Transaction
+            }
+            
+            txnsUpdatedSubject.onNext(upsertedTxn)
         } catch {
-            print(error)
+            print("Error happened in upsertTransaction: \(error)")
+            txnsUpdatedSubject.onError(error)
         }
     }
 }
