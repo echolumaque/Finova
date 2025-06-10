@@ -34,6 +34,7 @@ class HomeViewController: UIViewController, HomeView {
         )
     )
     private var txnDataSource: UICollectionViewDiffableDataSource<Section, Transaction>!
+    private lazy var numberFormatter = FormatterFactory.makeDecimalFormatter() // Refactor this soon
     
     init(container: Resolver) {
         self.container = container
@@ -109,8 +110,9 @@ class HomeViewController: UIViewController, HomeView {
             make.bottom.equalTo(containerStackView.safeAreaLayoutGuide.snp.bottom)
         }
         
-        let cell = UICollectionView.CellRegistration<TransactionCell, Transaction> { cell, indexPath, txn in
-            cell.set(transaction: txn)
+        let cell = UICollectionView.CellRegistration<TransactionCell, Transaction> { [weak self] cell, indexPath, txn in
+            guard let self else { return }
+            cell.set(transaction: txn, decimalFormatter: numberFormatter)
         }
         txnDataSource = UICollectionViewDiffableDataSource(collectionView: txnCollectionView) { collectionView, indexPath, txn in
             return collectionView.dequeueConfiguredReusableCell(using: cell, for: indexPath, item: txn)

@@ -26,76 +26,33 @@ actor CategoryService {
                 request.resultType = .countResultType
                 if try context.count(for: request) > 0 { return }
                 
-                let predefinedCategories: [(name: String, cashflowType: CashflowType, logo: String)] = [
-                    // Credit-only
-                    ("Salary & Wages",
-                     .credit,
-                     "banknote.fill"),
-                    ("Interest Income",
-                     .credit,
-                     "percent"),
-                    ("Dividends",
-                     .credit,
-                     "chart.pie.fill"),
-                    ("Refunds & Rebates",
-                     .credit,
-                     "arrow.uturn.left.circle.fill"),
-                    ("Loan Proceeds",
-                     .credit,
-                     "building.columns.fill"),
-                    ("Investment Gains",
-                     .credit,
-                     "chart.line.uptrend.xyaxis"),
-                    ("Rental Income",
-                     .credit,
-                     "house.fill"),
-                    ("Gift Received",
-                     .credit,
-                     "gift.fill"),
-                    ("Tax Refund",
-                     .credit,
-                     "doc.text.fill"),
-                    ("Reimbursements",
-                     .credit,
-                     "creditcard.fill"),
+                let predefinedCategories: [(name: String, logo: String)] = [
+                    ("Salary & Wages", "banknote.fill"),
+                    ("Interest Income", "percent"),
+                    ("Dividends", "chart.pie.fill"),
+                    ("Refunds & Rebates", "arrow.uturn.left.circle.fill"),
+                    ("Loan Proceeds", "building.columns.fill"),
+                    ("Investment Gains", "chart.line.uptrend.xyaxis"),
+                    ("Rental Income", "house.fill"),
+                    ("Gift Received", "gift.fill"),
+                    ("Tax Refund", "doc.text.fill"),
+                    ("Reimbursements", "creditcard.fill"),
                     
-                    // Debit-only
-                    ("Housing (Rent/Mortgage)",
-                     .debit,
-                     "house.fill"),
-                    ("Utilities (Electric, Water, Internet)",
-                     .debit,
-                     "bolt.fill"),
-                    ("Groceries & Household",
-                     .debit,
-                     "cart.fill"),
-                    ("Transportation (Fuel, Public Transit)",
-                     .debit,
-                     "car.fill"),
-                    ("Dining & Entertainment",
-                     .debit,
-                     "fork.knife"),
-                    ("Healthcare & Insurance",
-                     .debit,
-                     "stethoscope"),
-                    ("Education & Tuition",
-                     .debit,
-                     "book.fill"),
-                    ("Subscriptions & Memberships",
-                     .debit,
-                     "repeat.circle.fill"),
-                    ("Personal Care & Clothing",
-                     .debit,
-                     "tshirt.fill"),
-                    ("Miscellaneous Shopping",
-                     .debit,
-                     "bag.fill")
+                    ("Housing (Rent/Mortgage)", "house.fill"),
+                    ("Utilities (Electric, Water, Internet)", "bolt.fill"),
+                    ("Groceries & Household", "cart.fill"),
+                    ("Transportation (Fuel, Public Transit)", "car.fill"),
+                    ("Dining & Entertainment", "fork.knife"),
+                    ("Healthcare & Insurance", "stethoscope"),
+                    ("Education & Tuition", "book.fill"),
+                    ("Subscriptions & Memberships", "repeat.circle.fill"),
+                    ("Personal Care & Clothing", "tshirt.fill"),
+                    ("Miscellaneous Shopping", "bag.fill")
                 ]
                 
-                for (name, cashflowType, logo) in predefinedCategories {
+                for (name, logo) in predefinedCategories {
                     let category = Category(context: context)
                     category.typeId = UUID()
-                    category.cashflowType = cashflowType.encode()
                     category.name = name
                     category.logo = logo
                 }

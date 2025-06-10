@@ -56,6 +56,7 @@ actor TransactionService {
         transaction: Transaction? = nil,
         account: Account,
         category: Category,
+        cashflowType: CashflowType,
         value: Double,
         desc: String,
         attachment: Data?
@@ -73,6 +74,7 @@ actor TransactionService {
                 
                 txnInCtx.account = try bgContext.existingObject(with: account.objectID) as? Account
                 txnInCtx.category = try bgContext.existingObject(with: category.objectID) as? Category
+                txnInCtx.cashflowType = cashflowType.encode()
                 txnInCtx.value = value
                 txnInCtx.desc = desc.trimmingCharacters(in: .whitespacesAndNewlines)
                 txnInCtx.attachment = attachment

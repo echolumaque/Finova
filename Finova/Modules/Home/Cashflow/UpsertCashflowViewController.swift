@@ -313,7 +313,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         
         continueBtn = UIButton(configuration: config, primaryAction: UIAction { [weak self] _ in
             guard let self, let presenter else { return }
-            Task { await presenter.didTapContinue() }
+            Task { await presenter.didTapContinue(cashflowType: self.cashflowType) }
         })
         continueBtn.isEnabled = presenter?.isContinueEnabled ?? false
         

@@ -11,7 +11,6 @@ import CoreData
 extension Category {
     convenience init(
         typeId: UUID,
-        cashflowType: CashflowType,
         name: String,
         logo: String,
         in context: NSManagedObjectContext
@@ -19,7 +18,6 @@ extension Category {
         let entity = NSEntityDescription.entity(forEntityName: "Category", in: context)!
         self.init(entity: entity, insertInto: context)
         self.typeId = typeId
-        self.cashflowType = cashflowType.encode()
         self.name = name
         self.logo = logo
     }
@@ -95,7 +93,6 @@ extension Category {
         return predefinedCategories.map { info in
             Category(
                 typeId: UUID(),
-                cashflowType: info.cashflowType,
                 name: info.name,
                 logo: info.logo,
                 in: context

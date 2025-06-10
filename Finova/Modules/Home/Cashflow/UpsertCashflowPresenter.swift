@@ -26,7 +26,7 @@ protocol UpsertCashflowPresenter: AnyObject {
     func presentPhotoLibrary()
     func didPickAttachmentFromLibrary(_ results: [PHPickerResult])
     func didRemoveAttachment()
-    func didTapContinue() async
+    func didTapContinue(cashflowType: CashflowType) async
 }
 
 class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
@@ -38,14 +38,8 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
     private var selectedAccount: Account?
     private var selectedCategory: Category?
     
-    private let numberFormatter: NumberFormatter
+    private lazy var numberFormatter = FormatterFactory.makeDecimalFormatter()
     private var selectedAssetIdentifiers: [String] = []
-    
-    init() {
-        numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
-        numberFormatter.locale = Locale.current
-    }
     
     func viewDidLoad() {
         Task {
@@ -135,8 +129,8 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
         view?.removeAttachment(removedIdentifier)
     }
     
-    func didTapContinue() async {
-        await interactor?.upsertTransaction()
+    func didTapContinue(cashflowType: CashflowType) async {
+        await interactor?.upsertTransaction(cashflowType: cashflowType)
         await router?.onTxnUpsert()
     }
 }
