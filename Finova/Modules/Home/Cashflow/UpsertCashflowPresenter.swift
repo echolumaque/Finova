@@ -12,6 +12,7 @@ protocol UpsertCashflowPresenter: AnyObject {
     var router: UpsertCashflowRouter? { get set }
     var interactor: UpsertCashflowInteractor? { get set }
     var view: UpsertCashflowViewProtocol? { get set }
+    var isContinueEnabled: Bool { get set }
     
     func viewDidLoad()
     func didFinishedEnteringValue(_ value: String)
@@ -31,9 +32,20 @@ protocol UpsertCashflowPresenter: AnyObject {
 class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
     var router: (any UpsertCashflowRouter)?
     var interactor: (any UpsertCashflowInteractor)?
-    weak var view: UpsertCashflowViewProtocol?
+    var isContinueEnabled: Bool = false
     
+    weak var view: UpsertCashflowViewProtocol?
+    private var selectedAccount: Account?
+    private var selectedCategory: Category?
+    
+    private let numberFormatter: NumberFormatter
     private var selectedAssetIdentifiers: [String] = []
+    
+    init() {
+        numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.locale = Locale.current
+    }
     
     func viewDidLoad() {
         Task {
@@ -48,22 +60,35 @@ class UpsertCashflowPresenterImpl: UpsertCashflowPresenter {
     
     func didFinishedEnteringValue(_ value: String) {
         interactor?.didFinishedEnteringValue(value)
+        
+        let parsedString = numberFormatter.number(from: value) ?? 0
+        let prettyString = numberFormatter.string(from: parsedString) ?? "0"
+        view?.prettifyValueString(prettyString: prettyString)
     }
     
     func validateValueIfDecimal(value: String) -> Bool {
         let decimalSeparator = Locale.current.decimalSeparator ?? "."
+        let groupingSeparator = Locale.current.groupingSeparator ?? ","
+        
+        let valueWithoutGrouping = value.replacingOccurrences(of: groupingSeparator, with: "")
         let separatorEscaped = NSRegularExpression.escapedPattern(for: decimalSeparator)
         let pattern = "^\\d*(?:\(separatorEscaped)\\d{0,2})?$"
-        
-        return value.range(of: pattern, options: .regularExpression) != nil
+
+        return valueWithoutGrouping.range(of: pattern, options: .regularExpression) != nil
     }
     
     func selectAccount(_ account: Account) {
         interactor?.selectAccount(account)
+        selectedAccount = account
+        isContinueEnabled = selectedAccount != nil && selectedCategory != nil
+        view?.manipulateContinueState(isEnabled: isContinueEnabled)
     }
     
     func selectCategory(_ category: Category) {
         interactor?.selectCategory(category)
+        selectedCategory = category
+        isContinueEnabled = selectedAccount != nil && selectedCategory != nil
+        view?.manipulateContinueState(isEnabled: isContinueEnabled)
     }
     
     func didFinishedEnteringDescription(_ description: String) {

@@ -8,19 +8,20 @@
 import SnapKit
 import UIKit
 
-class AccountSummaryHeaderView: UICollectionReusableView {
+//class AccountSummaryHeaderView: UICollectionReusableView {
+class AccountSummaryHeaderView: UIView {
     static let reuseId = "ReuseId"
     
     private let horizontalPadding: CGFloat = 20
     private let verticalPadding: CGFloat = 8
     
-    private lazy var gradientLayer = CAGradientLayer()
-    private lazy var helperStackView = UIStackView(frame: .zero)
-    private lazy var containerView = UIView(frame: .zero)
-    private lazy var accountMenuStackView = UIStackView(frame: .zero)
-    private lazy var accountStackView = UIStackView(frame: .zero)
-    private lazy var recentTxnLabel = DynamicLabel(textColor: .black, font: UIFont.preferredFont(for: .title2, weight: .semibold))
-    private lazy var frequencySegmentedControl = UISegmentedControl(frame: .zero)
+    private let gradientLayer = CAGradientLayer()
+    private let helperStackView = UIStackView(frame: .zero)
+    private let containerView = UIView(frame: .zero)
+    private let accountMenuStackView = UIStackView(frame: .zero)
+    private let accountStackView = UIStackView(frame: .zero)
+    private let recentTxnLabel = DynamicLabel(textColor: .black, font: UIFont.preferredFont(for: .title2, weight: .semibold))
+    private let frequencySegmentedControl = UISegmentedControl(frame: .zero)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -45,10 +46,10 @@ class AccountSummaryHeaderView: UICollectionReusableView {
         configureFrequencySegmentedControl()
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
+//    override func layoutSubviews() {
+//        super.layoutSubviews()
 //        gradientLayer.frame = containerView.bounds
-    }
+//    }
     
     private func configureHelperStackView() {
         helperStackView.axis = .vertical

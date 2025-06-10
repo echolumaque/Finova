@@ -16,6 +16,8 @@ protocol UpsertCashflowViewProtocol: AnyObject {
     func configureCategories(_ categories: [Category])
     func displayAttachment(_ image: UIImage) async
     func removeAttachment(_ identifier: String)
+    func prettifyValueString(prettyString: String)
+    func manipulateContinueState(isEnabled: Bool)
 }
 
 class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol {
@@ -37,6 +39,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
     private var selectedPhoto = UIImageView(frame: .zero)
     private var addAttachmentView = AddAttachmentView(menu: UIMenu())
     private var imagePicker = PHPickerViewController(configuration: .init())
+    private var continueBtn = UIButton(frame: .zero)
     
     init(cashflowType: CashflowType) {
         self.cashflowType = cashflowType
@@ -54,6 +57,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideKeyboardWhenTappedAround()
         view.backgroundColor = cashflowType.color
         navigationItem.title = cashflowType.rawValue
         navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
@@ -307,10 +311,12 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         config.buttonSize = .large
         config.title = "Continue"
         
-        let continueBtn = UIButton(configuration: config, primaryAction: UIAction { [weak self] _ in
+        continueBtn = UIButton(configuration: config, primaryAction: UIAction { [weak self] _ in
             guard let self, let presenter else { return }
             Task { await presenter.didTapContinue() }
         })
+        continueBtn.isEnabled = presenter?.isContinueEnabled ?? false
+        
         bottomVStack.addArrangedSubviews(SpacerView(), continueBtn)
         continueBtn.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview { $0.layoutMarginsGuide.snp.horizontalEdges }
@@ -401,6 +407,14 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         imagePicker.deselectAssets(withIdentifiers: [identifier])
         selectedPhoto.image = nil
     }
+    
+    func prettifyValueString(prettyString: String) {
+        valueTextField.text = prettyString
+    }
+    
+    func manipulateContinueState(isEnabled: Bool) {
+        continueBtn.isEnabled = isEnabled
+    }
 }
 
 extension UpsertCashflowViewController: UITextFieldDelegate {
@@ -414,7 +428,9 @@ extension UpsertCashflowViewController: UITextFieldDelegate {
         return presenter.validateValueIfDecimal(value: newText)
     }
     
-    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        presenter?.didFinishedEnteringValue(textField.text ?? "")
+    }
 }
 
 extension UpsertCashflowViewController: UITextViewDelegate {

@@ -15,7 +15,6 @@ protocol HomeView: AnyObject {
     var presenter: HomePresenter? { get set }
     func updateAccounts(_ accounts: [Account])
     func updateTransactions(_ transactions: [Transaction])
-    func applySnapshot( _ snapshot: NSDiffableDataSourceSnapshot<Section, Transaction>)
 }
 
 class HomeViewController: UIViewController, HomeView {
@@ -24,13 +23,14 @@ class HomeViewController: UIViewController, HomeView {
     private let horizontalPadding: CGFloat = 16
     private let verticalPadding: CGFloat = 8
 
-    private lazy var txnCollectionView = UICollectionView(
+    private let containerStackView = UIStackView(frame: .zero)
+    private let txnCollectionView = UICollectionView(
         frame: .zero,
         collectionViewLayout: UICollectionViewLayoutHelper.createVerticalCompositionalLayout(
             itemSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100)),
             groupSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100)),
             interGroupSpacing: 4,
-            hasHeader: true
+            hasHeader: false
         )
     )
     private var txnDataSource: UICollectionViewDiffableDataSource<Section, Transaction>!
@@ -48,6 +48,7 @@ class HomeViewController: UIViewController, HomeView {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
+        configureContainerStackView()
         configureTxnCollectionView()
         configureCashflowInsertView()
         
@@ -61,7 +62,6 @@ class HomeViewController: UIViewController, HomeView {
         }
     }
     
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
@@ -72,7 +72,7 @@ class HomeViewController: UIViewController, HomeView {
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
-//    override func updateContentUnavailableConfiguration(using state: UIContentUnavailableConfigurationState) {
+    override func updateContentUnavailableConfiguration(using state: UIContentUnavailableConfigurationState) {
 //        var config = UIContentUnavailableConfiguration.empty()
 //        config.image = UIImage(resource: .customDollarsignBankBuildingSlashFill)
 //        config.text = "No transactions"
@@ -82,16 +82,31 @@ class HomeViewController: UIViewController, HomeView {
 //            contentUnavailableConfiguration = config
 //            return
 //        }
-//    }
+    }
     
-    private func configureTxnCollectionView() {
-        txnCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(txnCollectionView)
-        txnCollectionView.snp.makeConstraints { make in
+    private func configureContainerStackView() {
+        containerStackView.axis = .vertical
+        containerStackView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(containerStackView)
+        containerStackView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.leading.equalTo(view.snp.leading)
             make.trailing.equalTo(view.snp.trailing)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
+    }
+    
+    private func configureTxnCollectionView() {
+        let header = AccountSummaryHeaderView(frame: .zero)
+        header.translatesAutoresizingMaskIntoConstraints = false
+        containerStackView.addArrangedSubview(header)
+        
+        txnCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        containerStackView.addArrangedSubview(txnCollectionView)
+        txnCollectionView.snp.makeConstraints { make in
+            make.leading.equalTo(containerStackView.snp.leading)
+            make.trailing.equalTo(containerStackView.snp.trailing)
+            make.bottom.equalTo(containerStackView.safeAreaLayoutGuide.snp.bottom)
         }
         
         let cell = UICollectionView.CellRegistration<TransactionCell, Transaction> { cell, indexPath, txn in
@@ -101,25 +116,25 @@ class HomeViewController: UIViewController, HomeView {
             return collectionView.dequeueConfiguredReusableCell(using: cell, for: indexPath, item: txn)
         }
         
-        // Register the header class
-        txnCollectionView.register(
-            AccountSummaryHeaderView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: AccountSummaryHeaderView.reuseId
-        )
-        
-        // Tell the data source how to dequeue it
-        txnDataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
-            guard kind == UICollectionView.elementKindSectionHeader else { return nil }
-            
-            let header = collectionView.dequeueReusableSupplementaryView(
-                ofKind: kind,
-                withReuseIdentifier: AccountSummaryHeaderView.reuseId,
-                for: indexPath
-            ) as! AccountSummaryHeaderView
-            
-            return header
-        }
+//        // Register the header class
+//        txnCollectionView.register(
+//            AccountSummaryHeaderView.self,
+//            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+//            withReuseIdentifier: AccountSummaryHeaderView.reuseId
+//        )
+//        
+//        // Tell the data source how to dequeue it
+//        txnDataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+//            guard kind == UICollectionView.elementKindSectionHeader else { return nil }
+//            
+//            let header = collectionView.dequeueReusableSupplementaryView(
+//                ofKind: kind,
+//                withReuseIdentifier: AccountSummaryHeaderView.reuseId,
+//                for: indexPath
+//            ) as! AccountSummaryHeaderView
+//            
+//            return header
+//        }
     }
     
     private func configureCashflowInsertView() {
@@ -146,10 +161,6 @@ class HomeViewController: UIViewController, HomeView {
         DispatchQueue.main.async {
             self.txnDataSource?.apply(currentSnapshot, animatingDifferences: true)
         }
-    }
-    
-    func applySnapshot(_ snapshot: NSDiffableDataSourceSnapshot<Section, Transaction>) {
-        DispatchQueue.main.async { self.txnDataSource.apply(snapshot, animatingDifferences: true) }
     }
 }
 
