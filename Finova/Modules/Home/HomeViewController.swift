@@ -14,7 +14,7 @@ import Swinject
 protocol HomeView: AnyObject {
     var presenter: HomePresenter? { get set }
     func updateAccounts(_ accounts: [Account])
-    func updateTransactions(_ transactions: [Transaction])
+    func updateTransactions(_ transactions: [TransactionCellViewModel])
 }
 
 class HomeViewController: UIViewController, HomeView {
@@ -33,8 +33,7 @@ class HomeViewController: UIViewController, HomeView {
             hasHeader: false
         )
     )
-    private var txnDataSource: UICollectionViewDiffableDataSource<Section, Transaction>!
-    private lazy var numberFormatter = FormatterFactory.makeDecimalFormatter() // Refactor this soon
+    private var txnDataSource: UICollectionViewDiffableDataSource<Section, TransactionCellViewModel>!
     
     init(container: Resolver) {
         self.container = container
@@ -110,9 +109,8 @@ class HomeViewController: UIViewController, HomeView {
             make.bottom.equalTo(containerStackView.safeAreaLayoutGuide.snp.bottom)
         }
         
-        let cell = UICollectionView.CellRegistration<TransactionCell, Transaction> { [weak self] cell, indexPath, txn in
-            guard let self else { return }
-            cell.set(transaction: txn, decimalFormatter: numberFormatter)
+        let cell = UICollectionView.CellRegistration<TransactionCell, TransactionCellViewModel> { cell, indexPath, txnVm in
+            cell.set(txnVm: txnVm)
         }
         txnDataSource = UICollectionViewDiffableDataSource(collectionView: txnCollectionView) { collectionView, indexPath, txn in
             return collectionView.dequeueConfiguredReusableCell(using: cell, for: indexPath, item: txn)
@@ -153,7 +151,7 @@ class HomeViewController: UIViewController, HomeView {
             
     }
     
-    func updateTransactions(_ transactions: [Transaction]) {
+    func updateTransactions(_ transactions: [TransactionCellViewModel]) {
         guard var currentSnapshot = txnDataSource?.snapshot() else { return }
         if currentSnapshot.indexOfSection(.main) == nil {
             currentSnapshot.appendSections([.main])

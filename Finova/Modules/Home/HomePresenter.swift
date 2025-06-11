@@ -15,7 +15,7 @@ protocol HomePresenter: AnyObject {
     
     func gotoAddCashflow(cashflowType: CashflowType)
     func fetchInitialTxns() async
-    func updateTransactions(transactions: [Transaction])
+    func updateTransactions(transactions: [TransactionCellViewModel])
     func getAccounts() async
     func getPrdefinedTransactions() async
 }
@@ -37,13 +37,13 @@ class HomePresenterImpl: HomePresenter {
         await interactor?.fetchInitialTxns()
     }
     
-    func updateTransactions(transactions: [Transaction]) {
+    func updateTransactions(transactions: [TransactionCellViewModel]) {
         view?.updateTransactions(transactions)
     }
     
     func getPrdefinedTransactions() async {
         let predefinedTransactions = await interactor?.getPrdefinedTransactions() ?? []
-        view?.updateTransactions(predefinedTransactions)
+        view?.updateTransactions(predefinedTransactions.map { $0.convertToVm() })
     }
     
     func gotoAddCashflow(cashflowType: CashflowType) {

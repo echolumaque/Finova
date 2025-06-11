@@ -119,22 +119,21 @@ class TransactionCell: UICollectionViewCell {
         secondVStack.snp.makeConstraints { $0.width.equalToSuperview().multipliedBy(0.2) }
     }
     
-    func set(transaction: Transaction, decimalFormatter: NumberFormatter) {
-        let cashflowType = transaction.cashflowType?.decode(CashflowType.self) ?? .credit
+    func set(txnVm: TransactionCellViewModel) {
+        let cashflowType = txnVm.cashflowType?.decode(CashflowType.self) ?? .credit
         
         imageContainer.backgroundColor = cashflowType.color.withAlphaComponent(0.2)
-        transactionImage.image = UIImage(systemName: transaction.category?.logo ?? "")
+        transactionImage.image = UIImage(systemName: txnVm.category?.logo ?? "")
         transactionImage.tintColor = cashflowType.color
         
-        transactionTitle.text = transaction.category?.name ?? "Unavailable"
+        transactionTitle.text = txnVm.category?.name ?? "Unavailable"
         
-        transactionDesc.text = transaction.desc ?? "Unavailable"
+        transactionDesc.text = txnVm.desc ?? "Unavailable"
         
         transactionCost.textColor = cashflowType.color
-//        transactionCost.text = String(format: "\(cashflowType.operatorToUse)$%.2f", transaction.value)
-        transactionCost.text = "\(cashflowType.operatorToUse)\(decimalFormatter.string(from: NSNumber(floatLiteral: transaction.value)) ?? "0")"
+        transactionCost.text = "\(cashflowType.operatorToUse)\(txnVm.formattedValue ?? "0")"
         
-        transactionTime.text = transaction.date?.customFormat("hh:mm a")
+        transactionTime.text = txnVm.date?.customFormat("hh:mm a")
         
     }
 }

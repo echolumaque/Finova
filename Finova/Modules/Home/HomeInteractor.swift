@@ -24,6 +24,7 @@ class HomeInteractorImpl: HomeInteractor {
     private let coreDataStack: CoreDataStack
     private let disposeBag = DisposeBag()
     private let transactionService: TransactionService
+    private lazy var numberFormatter = FormatterFactory.makeDecimalFormatter()
     
     init(
         accountService: AccountService,
@@ -44,7 +45,12 @@ class HomeInteractorImpl: HomeInteractor {
     
     func fetchInitialTxns() async {
         let txns = await transactionService.fetchAllTxns()
-        presenter?.updateTransactions(transactions: txns)
+        let mappedVm = txns.map { txn in
+            let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
+            return txn.convertToVm(formattedValue: formattedValue)
+        }
+        
+        presenter?.updateTransactions(transactions: mappedVm)
     }
     
     func getTransactions() async -> [Transaction] {
@@ -63,7 +69,9 @@ class HomeInteractorImpl: HomeInteractor {
                 .observe(on: MainScheduler.instance)
                 .subscribe(onNext: { [weak self] txn in
                     guard let self, let txn else { return }
-                    presenter?.updateTransactions(transactions: [txn])
+                    
+                    let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
+                    presenter?.updateTransactions(transactions: [txn.convertToVm(formattedValue: formattedValue)])
                 })
                 .disposed(by: disposeBag)
         }
