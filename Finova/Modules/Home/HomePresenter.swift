@@ -16,7 +16,7 @@ protocol HomePresenter: AnyObject {
     func gotoAddCashflow(cashflowType: CashflowType)
     func fetchInitialTxns() async
     func updateTransactions(transactions: [TransactionCellViewModel])
-    func getAccounts() async
+    func getAccountsMenuData() async -> [UIAction]
     func getPrdefinedTransactions() async
 }
 
@@ -25,12 +25,26 @@ class HomePresenterImpl: HomePresenter {
     var interactor: (any HomeInteractor)?
     weak var view: (any HomeView)?
     
-    private var items: [Transaction] = []
-    private var hasDoneInitialLoad = false
+    private var accounts: [Account] = []
+    private var selectedAccount: Account?
     
-    func getAccounts() async {
-        let accounts = await interactor?.getAccounts() ?? []
-        view?.updateAccounts(accounts)
+    func getAccountsMenuData() async -> [UIAction] {
+        if accounts.isEmpty {
+            let fetchedAccounts = await interactor?.getAccounts() ?? []
+            accounts.append(contentsOf: fetchedAccounts)
+            selectedAccount = fetchedAccounts.first
+        }
+        
+        let actions = await MainActor.run {
+            accounts.map { account in
+                UIAction(title: account.name ?? "No account", state: selectedAccount == account ? .on : .off) { [weak self] _ in
+                    guard let self else { return }
+                    selectedAccount = account
+                }
+            }
+        }
+        
+        return actions
     }
     
     func fetchInitialTxns() async {

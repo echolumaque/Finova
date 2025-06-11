@@ -111,7 +111,7 @@ class UpsertCashflowViewController: UIViewController, UpsertCashflowViewProtocol
         }
         
         let currencyLabel = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .extraLargeTitle, weight: .bold))
-        currencyLabel.text = "$"
+        currencyLabel.text = Locale.current.currencySymbol ?? "$"
         
         valueTextField.keyboardType = .decimalPad
         

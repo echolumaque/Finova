@@ -14,18 +14,20 @@ enum FormatterFactory {
         formatter.locale = Locale.current
         formatter.maximumFractionDigits = 2
         formatter.minimumFractionDigits = 2 // e.g., "1,234" instead of "1,234.00"
-        // Add any other app-wide configuration here
-        return formatter
         
-       
+        return formatter
     }
     
-    static func makeCurrencyFormatter(for currencyCode: String = "PHP") -> NumberFormatter {
+    static func makeCurrencyFormatter() -> NumberFormatter {
         let formatter = NumberFormatter()
+        let locale = Locale.current
+        
         formatter.numberStyle = .currency
-        formatter.currencyCode = currencyCode
-        formatter.locale = Locale.current
-        // You can add more configurations like locale
+        formatter.locale = locale
+        formatter.currencySymbol = locale.currencySymbol ?? "$"
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 2 // e.g., "1,234" instead of "1,234.00"
+        
         return formatter
     }
 }

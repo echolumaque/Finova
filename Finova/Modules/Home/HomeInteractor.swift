@@ -24,7 +24,7 @@ class HomeInteractorImpl: HomeInteractor {
     private let coreDataStack: CoreDataStack
     private let disposeBag = DisposeBag()
     private let transactionService: TransactionService
-    private lazy var numberFormatter = FormatterFactory.makeDecimalFormatter()
+    private lazy var numberFormatter = FormatterFactory.makeCurrencyFormatter()
     
     init(
         accountService: AccountService,

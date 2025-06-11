@@ -15,7 +15,6 @@ class AccountSummaryHeaderView: UIView {
     private let horizontalPadding: CGFloat = 20
     private let verticalPadding: CGFloat = 8
     
-    private let gradientLayer = CAGradientLayer()
     private let helperStackView = UIStackView(frame: .zero)
     private let containerView = UIView(frame: .zero)
     private let accountMenuStackView = UIStackView(frame: .zero)
@@ -33,9 +32,6 @@ class AccountSummaryHeaderView: UIView {
     }
     
     private func configure() {
-//        gradientLayer.colors = [UIColor(rgb: 0xFFF6E5).cgColor, UIColor(rgb: 0xF8EDD8).withAlphaComponent(0.15).cgColor]
-//        containerView.layer.insertSublayer(gradientLayer, at: 0)
-        
         configureHelperStackView()
         configureAccountContainerView()
         configureAccountStackView()
@@ -45,11 +41,6 @@ class AccountSummaryHeaderView: UIView {
         configureRecentTxnLabel()
         configureFrequencySegmentedControl()
     }
-    
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        gradientLayer.frame = containerView.bounds
-//    }
     
     private func configureHelperStackView() {
         helperStackView.axis = .vertical

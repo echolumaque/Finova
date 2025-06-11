@@ -9,7 +9,7 @@ import SnapKit
 import UIKit
 
 class TransactionCell: UICollectionViewCell {
-    private let horizontalPadding: CGFloat = 20
+    private let horizontalPadding: CGFloat = 16
     private let verticalPadding: CGFloat = 8
     
     private let mainHStack = UIStackView(frame: .zero)
@@ -69,10 +69,8 @@ class TransactionCell: UICollectionViewCell {
         mainHStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(mainHStack)
         mainHStack.snp.makeConstraints { make in
-            make.top.equalTo(contentView.safeAreaLayoutGuide.snp.top).offset(verticalPadding)
-            make.leading.equalTo(contentView.snp.leading).offset(horizontalPadding)
-            make.trailing.equalTo(contentView.snp.trailing).offset(-horizontalPadding)
-            make.bottom.equalTo(contentView.safeAreaLayoutGuide.snp.bottom).offset(-verticalPadding)
+            make.horizontalEdges.equalToSuperview { $0.safeAreaLayoutGuide }.inset(horizontalPadding)
+            make.verticalEdges.equalToSuperview { $0.safeAreaLayoutGuide }.inset(verticalPadding)
         }
         
         configureImage()
