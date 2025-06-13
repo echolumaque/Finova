@@ -6,6 +6,7 @@
 //
 
 import CoreData
+import RxSwift
 import UIKit
 
 protocol HomePresenter: AnyObject {
@@ -26,20 +27,21 @@ class HomePresenterImpl: HomePresenter {
     weak var view: (any HomeView)?
     
     private var accounts: [Account] = []
+    private let disposeBag = DisposeBag()
     private var selectedAccount: Account?
+    private let selectedAccountUpdatedSubject = PublishSubject<Account>()
+    
+    init() {
+        subscribeToAccountChanges()
+    }
     
     func getAccountsMenuData() async -> [UIAction] {
-        if accounts.isEmpty {
-            let fetchedAccounts = await interactor?.getAccounts() ?? []
-            accounts.append(contentsOf: fetchedAccounts)
-            selectedAccount = fetchedAccounts.first
-        }
-        
         let actions = await MainActor.run {
             accounts.map { account in
                 UIAction(title: account.name ?? "No account", state: selectedAccount == account ? .on : .off) { [weak self] _ in
                     guard let self else { return }
                     selectedAccount = account
+                    selectedAccountUpdatedSubject.onNext(account)
                 }
             }
         }
@@ -48,19 +50,42 @@ class HomePresenterImpl: HomePresenter {
     }
     
     func fetchInitialTxns() async {
-        await interactor?.fetchInitialTxns()
+        let fetchedAccounts = await interactor?.getAccounts() ?? []
+        accounts.append(contentsOf: fetchedAccounts)
+        selectedAccount = fetchedAccounts.first
+        
+        guard let selectedAccount else { return }
+        await interactor?.fetchInitialTxns(onAccount: selectedAccount)
     }
     
     func updateTransactions(transactions: [TransactionCellViewModel]) {
-        view?.updateTransactions(transactions)
+        view?.updateTxns(transactions)
     }
     
     func getPrdefinedTransactions() async {
         let predefinedTransactions = await interactor?.getPrdefinedTransactions() ?? []
-        view?.updateTransactions(predefinedTransactions.map { $0.convertToVm() })
+        view?.updateTxns(predefinedTransactions.map { $0.convertToVm() })
     }
     
     func gotoAddCashflow(cashflowType: CashflowType) {
         router?.gotoAddCashflow(cashflowType: cashflowType)
+    }
+    
+    private func subscribeToAccountChanges() {
+        _ = selectedAccountUpdatedSubject.subscribe { event in
+            switch event {
+            case .next(let account):
+                Task { [weak self] in
+                    guard let self else { return }
+                    
+                    let txns = await interactor?.getTxnsFrom(account: account) ?? []
+                    view?.updateTxnsBasedOnAccount(txns)
+                }
+                
+            case .error(_): break
+            case .completed: break
+            }
+        }
+        .disposed(by: disposeBag)
     }
 }

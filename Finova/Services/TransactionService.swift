@@ -42,9 +42,14 @@ actor TransactionService {
         }
     }
     
-    func fetchAllTxns() async -> [Transaction] {
+    func fetchInitialTxns(onAccount: Account) async -> [Transaction] {
         do {
-            let txns = try await coreDataStack.performInMainContext { try $0.fetch(Transaction.fetchRequest()) }
+            let txns = try await coreDataStack.performInMainContext { ctx in
+                let fetchRequest = Transaction.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "account == %@", onAccount)
+                return try ctx.fetch(fetchRequest)
+            }
+            
             return txns
         } catch {
             print("Error happened in fetchAllTxns: \(error)")

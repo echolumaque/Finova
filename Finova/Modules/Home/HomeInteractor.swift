@@ -12,9 +12,10 @@ import RxSwift
 protocol HomeInteractor: AnyObject {
     var presenter: HomePresenter? { get set }
     func getAccounts() async -> [Account]
-    func fetchInitialTxns() async
+    func fetchInitialTxns(onAccount: Account) async
     func getTransactions() async -> [Transaction]
     func getPrdefinedTransactions() async -> [Transaction]
+    func getTxnsFrom(account: Account) async -> [TransactionCellViewModel]
 }
 
 class HomeInteractorImpl: HomeInteractor {
@@ -43,8 +44,8 @@ class HomeInteractorImpl: HomeInteractor {
         return accounts
     }
     
-    func fetchInitialTxns() async {
-        let txns = await transactionService.fetchAllTxns()
+    func fetchInitialTxns(onAccount: Account) async {
+        let txns = await transactionService.fetchInitialTxns(onAccount: onAccount)
         let mappedVm = txns.map { txn in
             let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
             return txn.convertToVm(formattedValue: formattedValue)
@@ -63,7 +64,18 @@ class HomeInteractorImpl: HomeInteractor {
         return predefinedTransactions
     }
     
+    func getTxnsFrom(account: Account) async -> [TransactionCellViewModel] {
+        let txns = await accountService.getTxnsFrom(account: account)
+        let parsedTxns = txns.map { txn in
+            let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
+            return txn.convertToVm(formattedValue: formattedValue)
+        }
+        
+        return parsedTxns
+    }
+    
     private func subscribeToTransactionUpdates() {
+        // Invoked when a transaction is upserted
         Task {
             await transactionService.txnsUpdated
                 .observe(on: MainScheduler.instance)

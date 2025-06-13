@@ -14,6 +14,7 @@ struct TransactionCellViewModel: Hashable {
     let desc: String?
     let txnId: UUID?
     let value: Double
+    let account: Account?
     let category: Category?
     let formattedValue: String?
 }
@@ -27,6 +28,7 @@ extension Transaction {
             desc: self.desc,
             txnId: self.txnId,
             value: self.value,
+            account: self.account,
             category: self.category,
             formattedValue: formattedValue
         )

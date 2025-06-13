@@ -13,7 +13,8 @@ import Swinject
 
 protocol HomeView: AnyObject {
     var presenter: HomePresenter? { get set }
-    func updateTransactions(_ transactions: [TransactionCellViewModel])
+    func updateTxns(_ transactions: [TransactionCellViewModel])
+    func updateTxnsBasedOnAccount(_ transactions: [TransactionCellViewModel])
 }
 
 class HomeViewController: UIViewController, HomeView {
@@ -308,8 +309,7 @@ class HomeViewController: UIViewController, HomeView {
 //        segmentedControl.selectedSegmentIndex
     }
     
-    
-    func updateTransactions(_ transactions: [TransactionCellViewModel]) {
+    func updateTxns(_ transactions: [TransactionCellViewModel]) {
         guard var currentSnapshot = txnDataSource?.snapshot() else { return }
         if currentSnapshot.indexOfSection(.main) == nil {
             currentSnapshot.appendSections([.main])
@@ -318,6 +318,15 @@ class HomeViewController: UIViewController, HomeView {
         currentSnapshot.appendItems(transactions, toSection: .main)
         DispatchQueue.main.async {
             self.txnDataSource?.apply(currentSnapshot, animatingDifferences: true)
+        }
+    }
+    
+    func updateTxnsBasedOnAccount(_ transactions: [TransactionCellViewModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, TransactionCellViewModel>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(transactions)
+        DispatchQueue.main.async {
+            self.txnDataSource?.apply(snapshot, animatingDifferences: true)
         }
     }
 }

@@ -27,10 +27,3 @@ import CoreData
 //        ]
 //    }
 //}
-
-
-//extension Account {
-//    public static func ==(lhs: Account, rhs: Account) -> Bool {
-//        lhs.name == rhs.name
-//    }
-//}
