@@ -6,11 +6,15 @@
 //
 
 import Foundation
+import RxSwift
 
 actor AccountService {
     private let coreDataStack: CoreDataStack
     private var didInitialize = false
+    private let disposeBag = DisposeBag()
     private let transactionService: TransactionService
+    
+    let accountValueUpdatedSubject = PublishSubject<(Account, TransactionType)>()
     
     init(coreDataStack: CoreDataStack, transactionService: TransactionService) {
         self.coreDataStack = coreDataStack
@@ -31,11 +35,17 @@ actor AccountService {
                 for name in accountNames {
                     let account = Account(context: context)
                     account.name = name
-                    account.value = 0
+                    account.value = 100000
                 }
                 
                 try context.save()
             }
+            
+            accountValueUpdatedSubject
+                .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+                .observe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+                .subscribe(onNext: onAccountValueUpdated)
+                .disposed(by: disposeBag)
         } catch {
             print(error)
         }
@@ -59,5 +69,26 @@ actor AccountService {
         }
         
         return txns ?? []
+    }
+    
+    private func onAccountValueUpdated(account: Account, txnType: TransactionType) {
+        Task { [weak self] in
+            guard let self else { return }
+            
+            do {
+                try await coreDataStack.performInBgContext { ctx in
+                    guard let fetchedAccount = try ctx.existingObject(with: account.objectID) as? Account else { return }
+                    
+                    switch txnType {
+                    case .credit(let value): fetchedAccount.value += value
+                    case .debit(let value): fetchedAccount.value -= value
+                    }
+                    
+                    try ctx.save()
+                }
+            } catch {
+                print(error)
+            }
+        }
     }
 }

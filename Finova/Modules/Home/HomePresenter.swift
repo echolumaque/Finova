@@ -28,6 +28,7 @@ class HomePresenterImpl: HomePresenter {
     
     private var accounts: [Account] = []
     private let disposeBag = DisposeBag()
+    private lazy var numberFormatter = FormatterFactory.makeCurrencyFormatter()
     private var selectedAccount: Account?
     private let selectedAccountUpdatedSubject = PublishSubject<Account>()
     
@@ -55,6 +56,7 @@ class HomePresenterImpl: HomePresenter {
         selectedAccount = fetchedAccounts.first
         
         guard let selectedAccount else { return }
+        view?.updateAvailableBalance(numberFormatter.string(from: NSNumber(value: selectedAccount.value)) ?? "")
         await interactor?.fetchInitialTxns(onAccount: selectedAccount)
     }
     
@@ -72,7 +74,10 @@ class HomePresenterImpl: HomePresenter {
     }
     
     private func subscribeToAccountChanges() {
-        _ = selectedAccountUpdatedSubject.subscribe { event in
+        _ = selectedAccountUpdatedSubject
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+            .observe(on: MainScheduler.instance)
+            .subscribe { event in
             switch event {
             case .next(let account):
                 Task { [weak self] in
@@ -80,6 +85,7 @@ class HomePresenterImpl: HomePresenter {
                     
                     let txns = await interactor?.getTxnsFrom(account: account) ?? []
                     view?.updateTxnsBasedOnAccount(txns)
+                    view?.updateAvailableBalance(numberFormatter.string(from: NSNumber(value: account.value)) ?? "")
                 }
                 
             case .error(_): break

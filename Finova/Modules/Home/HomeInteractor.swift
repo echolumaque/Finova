@@ -11,6 +11,7 @@ import RxSwift
 
 protocol HomeInteractor: AnyObject {
     var presenter: HomePresenter? { get set }
+    
     func getAccounts() async -> [Account]
     func fetchInitialTxns(onAccount: Account) async
     func getTransactions() async -> [Transaction]
@@ -20,12 +21,15 @@ protocol HomeInteractor: AnyObject {
 
 class HomeInteractorImpl: HomeInteractor {
     weak var presenter: (any HomePresenter)?
-    
+//    private let txnsSubject = BehaviorSubject<[TransactionCellViewModel]>(value: [])
+//    var txnsObservable: Observable<[TransactionCellViewModel]> { txnsSubject.asObservable() }
+
     private let accountService: AccountService
     private let coreDataStack: CoreDataStack
     private let disposeBag = DisposeBag()
     private let transactionService: TransactionService
     private lazy var numberFormatter = FormatterFactory.makeCurrencyFormatter()
+    
     
     init(
         accountService: AccountService,
@@ -36,7 +40,7 @@ class HomeInteractorImpl: HomeInteractor {
         self.coreDataStack = coreDataStack
         self.transactionService = transactionService
         
-        subscribeToTransactionUpdates()
+        subscribeToTxnUpserts()
     }
     
     func getAccounts() async -> [Account] {
@@ -74,10 +78,11 @@ class HomeInteractorImpl: HomeInteractor {
         return parsedTxns
     }
     
-    private func subscribeToTransactionUpdates() {
+    private func subscribeToTxnUpserts() {
         // Invoked when a transaction is upserted
         Task {
             await transactionService.txnsUpdated
+                .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
                 .observe(on: MainScheduler.instance)
                 .subscribe(onNext: { [weak self] txn in
                     guard let self, let txn else { return }

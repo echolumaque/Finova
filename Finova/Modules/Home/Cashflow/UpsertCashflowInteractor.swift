@@ -100,6 +100,8 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
     
     func upsertTransaction(cashflowType: CashflowType) async {
         guard let selectedAccount, let selectedCategory else { return }
+        
+        let valueEntry: TransactionType = cashflowType == .credit ? .credit(value: value) : .debit(value: value)
         await transactionService.upsertTxn(
             transaction: nil,
             account: selectedAccount,
@@ -109,5 +111,6 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
             desc: description,
             attachment: selectedAttachment
         )
+        await accountService.accountValueUpdatedSubject.onNext((selectedAccount, valueEntry))
     }
 }

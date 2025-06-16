@@ -88,6 +88,12 @@ import UIKit
 class CashflowView: UIView {
     private let horizontalPadding: CGFloat = 20
     private let verticalPadding: CGFloat = 8
+    
+    private let value = DynamicLabel(
+        textColor: .white,
+        font: UIFont.preferredFont(for: .title1, weight: .bold),
+        minimumScaleFactor: 0.65
+    )
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -101,17 +107,19 @@ class CashflowView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func configure(cashflowType: CashflowType) {
         translatesAutoresizingMaskIntoConstraints = false
         layer.cornerRadius = 30
         clipsToBounds = true
         backgroundColor = cashflowType.color
+        setContentCompressionResistancePriority(.required, for: .horizontal)
+        setContentHuggingPriority(.defaultLow, for: .horizontal)
 
         let hStack = UIStackView()
         hStack.axis = .horizontal
 //        hStack.backgroundColor = .red
-        hStack.spacing = 15
+        hStack.spacing = 8
         hStack.layoutMargins = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
         hStack.isLayoutMarginsRelativeArrangement = true
         hStack.translatesAutoresizingMaskIntoConstraints = false
@@ -134,7 +142,7 @@ class CashflowView: UIView {
             cashflowImage.widthAnchor.constraint(equalToConstant: 40),
             cashflowImage.heightAnchor.constraint(equalToConstant: 40),
         ])
-        hStack.addArrangedSubview(cashflowImage)
+        hStack.addArrangedSubviews(SpacerView(), cashflowImage, SpacerView())
         
         let vStack = UIStackView()
 //        vStack.backgroundColor = .blue
@@ -147,9 +155,14 @@ class CashflowView: UIView {
         cashflowName.text = cashflowType.rawValue
         vStack.addArrangedSubview(cashflowName)
         
-        let value = DynamicLabel(textColor: .white, font: UIFont.preferredFont(for: .title1, weight: .bold), minimumScaleFactor: 0.65)
-        value.text = "$5,000.46"
+        value.text = "\(Locale.current.currencySymbol ?? "$")0.00"
         vStack.addArrangedSubview(value)
+    }
+    
+    func update(newValue: String) {
+        let parsedValue = (try? Double(newValue, format: .number)) ?? 0
+        let cleanedValue = parsedValue < 0 ? -parsedValue : parsedValue
+        value.text = "\(Locale.current.currencySymbol ?? "$")\(cleanedValue)"
     }
 }
 

@@ -13,6 +13,7 @@ import Swinject
 
 protocol HomeView: AnyObject {
     var presenter: HomePresenter? { get set }
+    func updateAvailableBalance(_ balance: String)
     func updateTxns(_ transactions: [TransactionCellViewModel])
     func updateTxnsBasedOnAccount(_ transactions: [TransactionCellViewModel])
 }
@@ -27,6 +28,7 @@ class HomeViewController: UIViewController, HomeView {
     private let helperStackView = UIStackView(frame: .zero)
     private let containerView = UIView(frame: .zero)
     private let accountMenuStackView = UIStackView(frame: .zero)
+    private let accountBalance = DynamicLabel(textColor: .label, font: UIFont.preferredFont(for: .extraLargeTitle, weight: .bold))
     private let accountStackView = UIStackView(frame: .zero)
     private let recentTxnLabel = DynamicLabel(textColor: .black, font: UIFont.preferredFont(for: .title2, weight: .semibold))
     private let frequencySegmentedControl = UISegmentedControl(frame: .zero)
@@ -151,8 +153,7 @@ class HomeViewController: UIViewController, HomeView {
         containerView.addSubview(accountStackView)
         accountStackView.snp.makeConstraints { make in
             make.top.equalTo(containerStackView.safeAreaLayoutGuide.snp.top)
-            make.leading.equalTo(containerView.snp.leading).offset(horizontalPadding)
-            make.trailing.equalTo(containerView.snp.trailing).offset(-horizontalPadding)
+            make.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-30)
         }
     }
@@ -202,8 +203,6 @@ class HomeViewController: UIViewController, HomeView {
             make.centerX.equalTo(accountBalanceAndName.snp.centerX)
         }
         
-        let accountBalance = DynamicLabel(textColor: .label, font: UIFont.preferredFont(for: .extraLargeTitle, weight: .bold))
-        accountBalance.text = "\(Locale.current.currencySymbol ?? "$")5,000.00"
         accountBalanceAndName.addSubview(accountBalance)
         accountBalance.snp.makeConstraints { make in
             make.top.equalTo(availableBalance.snp.bottom).offset(verticalPadding)
@@ -218,16 +217,16 @@ class HomeViewController: UIViewController, HomeView {
         let cashflowStackView = UIStackView(frame: .zero)
         cashflowStackView.axis = .horizontal
         cashflowStackView.alignment = .center
-        cashflowStackView.distribution = .fillEqually
         cashflowStackView.spacing = horizontalPadding
         cashflowStackView.translatesAutoresizingMaskIntoConstraints = false
-        cashflowStackView.layoutMargins = UIEdgeInsets(top: 0, left: -horizontalPadding, bottom: 0, right: -horizontalPadding)
+        cashflowStackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         cashflowStackView.isLayoutMarginsRelativeArrangement = true
         accountStackView.addArrangedSubview(cashflowStackView)
         
         let incomeCashflow = CashflowView(cashflowType: .credit)
         let expensesCashflow = CashflowView(cashflowType: .debit)
-        cashflowStackView.addArrangedSubviews(incomeCashflow, expensesCashflow)
+        cashflowStackView.addArrangedSubviews(incomeCashflow, SpacerView(), expensesCashflow)
+        incomeCashflow.widthAnchor.constraint(equalTo: expensesCashflow.widthAnchor).isActive = true
     }
     
     private func configureRecentTxnLabel() {
@@ -304,7 +303,9 @@ class HomeViewController: UIViewController, HomeView {
             make.size.equalTo(50)
         }
     }
-    
+}
+
+extension HomeViewController {
     @objc func frequencyDidChange(_ segmentedControl: UISegmentedControl) {
 //        segmentedControl.selectedSegmentIndex
     }
@@ -328,6 +329,10 @@ class HomeViewController: UIViewController, HomeView {
         DispatchQueue.main.async {
             self.txnDataSource?.apply(snapshot, animatingDifferences: true)
         }
+    }
+    
+    func updateAvailableBalance(_ balance: String) {
+        DispatchQueue.main.async { self.accountBalance.text = balance }
     }
 }
 
