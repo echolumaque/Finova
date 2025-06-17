@@ -11,9 +11,11 @@ import RxSwift
 
 protocol HomeInteractor: AnyObject {
     var presenter: HomePresenter? { get set }
+    var accountValueUpdated: Observable<(Account?, Double)>? { get }
+    var upsertedTxns: Observable<Transaction?>? { get }
     
     func getAccounts() async -> [Account]
-    func fetchInitialTxns(onAccount: Account) async
+    func fetchInitialTxns(onAccount: Account) async -> [TransactionCellViewModel]
     func getTransactions() async -> [Transaction]
     func getPrdefinedTransactions() async -> [Transaction]
     func getTxnsFrom(account: Account) async -> [TransactionCellViewModel]
@@ -21,15 +23,13 @@ protocol HomeInteractor: AnyObject {
 
 class HomeInteractorImpl: HomeInteractor {
     weak var presenter: (any HomePresenter)?
-//    private let txnsSubject = BehaviorSubject<[TransactionCellViewModel]>(value: [])
-//    var txnsObservable: Observable<[TransactionCellViewModel]> { txnsSubject.asObservable() }
-
+    var accountValueUpdated: Observable<(Account?, Double)>?
+    var upsertedTxns: Observable<Transaction?>?
+    
     private let accountService: AccountService
     private let coreDataStack: CoreDataStack
-    private let disposeBag = DisposeBag()
     private let transactionService: TransactionService
     private lazy var numberFormatter = FormatterFactory.makeCurrencyFormatter()
-    
     
     init(
         accountService: AccountService,
@@ -40,6 +40,7 @@ class HomeInteractorImpl: HomeInteractor {
         self.coreDataStack = coreDataStack
         self.transactionService = transactionService
         
+        subscribeToAccountUpdates()
         subscribeToTxnUpserts()
     }
     
@@ -48,14 +49,15 @@ class HomeInteractorImpl: HomeInteractor {
         return accounts
     }
     
-    func fetchInitialTxns(onAccount: Account) async {
+    func fetchInitialTxns(onAccount: Account) async -> [TransactionCellViewModel] {
         let txns = await transactionService.fetchInitialTxns(onAccount: onAccount)
         let mappedVm = txns.map { txn in
             let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
             return txn.convertToVm(formattedValue: formattedValue)
         }
         
-        presenter?.updateTransactions(transactions: mappedVm)
+//        presenter?.updateTransactions(transactions: mappedVm)
+        return mappedVm
     }
     
     func getTransactions() async -> [Transaction] {
@@ -78,19 +80,21 @@ class HomeInteractorImpl: HomeInteractor {
         return parsedTxns
     }
     
+    private func subscribeToAccountUpdates() {
+        Task {
+            accountValueUpdated = await accountService
+                .accountValueUpdated
+                .share(replay: 1)
+        }
+    }
+    
     private func subscribeToTxnUpserts() {
         // Invoked when a transaction is upserted
         Task {
-            await transactionService.txnsUpdated
-                .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-                .observe(on: MainScheduler.instance)
-                .subscribe(onNext: { [weak self] txn in
-                    guard let self, let txn else { return }
-                    
-                    let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
-                    presenter?.updateTransactions(transactions: [txn.convertToVm(formattedValue: formattedValue)])
-                })
-                .disposed(by: disposeBag)
+            upsertedTxns = await transactionService
+                .txnsUpdated
+                .compactMap { $0 }
+                .share(replay: 1)
         }
     }
 }

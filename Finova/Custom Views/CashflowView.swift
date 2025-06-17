@@ -160,9 +160,9 @@ class CashflowView: UIView {
     }
     
     func update(newValue: String) {
-        let parsedValue = (try? Double(newValue, format: .number)) ?? 0
-        let cleanedValue = parsedValue < 0 ? -parsedValue : parsedValue
-        value.text = "\(Locale.current.currencySymbol ?? "$")\(cleanedValue)"
+//        let cleanedValue = newValue < 0 ? -newValue : newValue
+//        value.text = "\(Locale.current.currencySymbol ?? "$")\(cleanedValue)"
+        DispatchQueue.main.async { self.value.text = newValue }
     }
 }
 

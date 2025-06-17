@@ -7,7 +7,6 @@
 
 import CoreData
 import UIKit
-import RxSwift
 import SnapKit
 import Swinject
 
@@ -16,6 +15,8 @@ protocol HomeView: AnyObject {
     func updateAvailableBalance(_ balance: String)
     func updateTxns(_ transactions: [TransactionCellViewModel])
     func updateTxnsBasedOnAccount(_ transactions: [TransactionCellViewModel])
+    func updateCreditCashflowBadge(value: String)
+    func updateDebitCashflowBadge(value: String)
 }
 
 class HomeViewController: UIViewController, HomeView {
@@ -30,6 +31,8 @@ class HomeViewController: UIViewController, HomeView {
     private let accountMenuStackView = UIStackView(frame: .zero)
     private let accountBalance = DynamicLabel(textColor: .label, font: UIFont.preferredFont(for: .extraLargeTitle, weight: .bold))
     private let accountStackView = UIStackView(frame: .zero)
+    private let incomeCashflowBadge = CashflowView(cashflowType: .credit)
+    private let expensesCashflowBadge = CashflowView(cashflowType: .debit)
     private let recentTxnLabel = DynamicLabel(textColor: .black, font: UIFont.preferredFont(for: .title2, weight: .semibold))
     private let frequencySegmentedControl = UISegmentedControl(frame: .zero)
     private let txnCollectionView = UICollectionView(
@@ -61,14 +64,7 @@ class HomeViewController: UIViewController, HomeView {
         configureTxnCollectionView()
         configureCashflowInsertView()
         
-        Task { [weak self] in
-            guard let self else { return }
-//            await presenter?.getPredefinedAccounts()
-//            await presenter?.getPrdefinedTransactions()
-            
-//            await presenter?.getAccounts()
-            await presenter?.fetchInitialTxns()
-        }
+        Task { [weak self] in await self?.presenter?.didLoad() }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -223,10 +219,8 @@ class HomeViewController: UIViewController, HomeView {
         cashflowStackView.isLayoutMarginsRelativeArrangement = true
         accountStackView.addArrangedSubview(cashflowStackView)
         
-        let incomeCashflow = CashflowView(cashflowType: .credit)
-        let expensesCashflow = CashflowView(cashflowType: .debit)
-        cashflowStackView.addArrangedSubviews(incomeCashflow, SpacerView(), expensesCashflow)
-        incomeCashflow.widthAnchor.constraint(equalTo: expensesCashflow.widthAnchor).isActive = true
+        cashflowStackView.addArrangedSubviews(incomeCashflowBadge, SpacerView(), expensesCashflowBadge)
+        incomeCashflowBadge.widthAnchor.constraint(equalTo: expensesCashflowBadge.widthAnchor).isActive = true
     }
     
     private func configureRecentTxnLabel() {
@@ -333,6 +327,14 @@ extension HomeViewController {
     
     func updateAvailableBalance(_ balance: String) {
         DispatchQueue.main.async { self.accountBalance.text = balance }
+    }
+    
+    func updateCreditCashflowBadge(value: String) {
+        incomeCashflowBadge.update(newValue: value)
+    }
+    
+    func updateDebitCashflowBadge(value: String) {
+        expensesCashflowBadge.update(newValue: value)
     }
 }
 

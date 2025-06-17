@@ -111,6 +111,7 @@ class UpsertCashflowInteractorImpl: UpsertCashflowInteractor {
             desc: description,
             attachment: selectedAttachment
         )
-        await accountService.accountValueUpdatedSubject.onNext((selectedAccount, valueEntry))
+        await accountService.updateAccountValue(account: selectedAccount, txnType: valueEntry)
+//        await accountService.accountValueUpdatedSubject.onNext((selectedAccount, valueEntry))
     }
 }

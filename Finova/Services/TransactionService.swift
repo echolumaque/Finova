@@ -13,7 +13,7 @@ import UIKit
 actor TransactionService {
     private let coreDataStack: CoreDataStack
     
-    private let txnsUpdatedSubject = PublishSubject<Transaction?>()
+    private let txnsUpdatedSubject = BehaviorSubject<Transaction?>(value: nil)
     var txnsUpdated: Observable<Transaction?> { txnsUpdatedSubject.asObservable() }
     
     init(coreDataStack: CoreDataStack) {
