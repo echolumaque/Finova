@@ -14,10 +14,11 @@ protocol HomePresenter: AnyObject {
     var interactor: HomeInteractor? { get set }
     var view: HomeView? { get set }
     
-    func gotoAddCashflow(cashflowType: CashflowType)
     func didLoad() async
+    func gotoAddCashflow(cashflowType: CashflowType)
     func getAccountsMenuData() async -> [UIAction]
     func getPrdefinedTransactions() async
+    func getTransactionsOn(frequency: Frequency) async
 }
 
 class HomePresenterImpl: HomePresenter {
@@ -43,12 +44,17 @@ class HomePresenterImpl: HomePresenter {
         selectedAccount = fetchedAccounts.first
         
         guard let selectedAccount else { return }
+        view?.updateSelectedAccount(selectedAccount)
         view?.updateAvailableBalance(numberFormatter.string(from: NSNumber(value: selectedAccount.value)) ?? "")
-        let initialTxns = await interactor?.fetchInitialTxns(onAccount: selectedAccount) ?? []
+        let initialTxns = await interactor?.getTransactionsOn(account: selectedAccount, frequency: .daily) ?? []
         generateInitialTxns(initialTxns)
         
         subscribeToAccountValueChanges()
         subscribeToTxnChanges()
+    }
+    
+    func gotoAddCashflow(cashflowType: CashflowType) {
+        router?.gotoAddCashflow(cashflowType: cashflowType)
     }
     
     func getAccountsMenuData() async -> [UIAction] {
@@ -70,9 +76,12 @@ class HomePresenterImpl: HomePresenter {
         view?.updateTxns(predefinedTransactions.map { $0.convertToVm() })
     }
     
-    func gotoAddCashflow(cashflowType: CashflowType) {
-        router?.gotoAddCashflow(cashflowType: cashflowType)
+    func getTransactionsOn(frequency: Frequency) async {
+        guard let selectedAccount else { return }
+        let txns = await interactor?.getTransactionsOn(account: selectedAccount, frequency: frequency)
+        let abc = 1
     }
+    
     
     private func generateInitialTxns(_ txns: [TransactionCellViewModel]) {
         for txn in txns {
@@ -102,12 +111,10 @@ class HomePresenterImpl: HomePresenter {
                 Task { [weak self] in
                     guard let self else { return }
                     
-                    let txns = await interactor?.getTxnsFrom(account: account) ?? []
-                    view?.updateTxnsBasedOnAccount(txns)
-                    view?.updateAvailableBalance(numberFormatter.string(from: NSNumber(value: account.value)) ?? "")
-
                     currentCredit = .zero
                     currentDebit = .zero
+                    
+                    let txns = await interactor?.getTxnsFrom(account: account) ?? []
                     for txn in txns {
                         guard let cashflowType = txn.cashflowType?.decode(CashflowType.self) else { continue }
                         switch cashflowType {
@@ -116,8 +123,11 @@ class HomePresenterImpl: HomePresenter {
                         }
                     }
                     
+                    view?.updateSelectedAccount(account)
+                    view?.updateAvailableBalance(numberFormatter.string(from: NSNumber(value: account.value)) ?? "")
                     view?.updateCreditCashflowBadge(value: numberFormatter.string(from: currentCredit as NSNumber) ?? "")
                     view?.updateDebitCashflowBadge(value: numberFormatter.string(from: currentDebit as NSNumber) ?? "")
+                    view?.updateTxnsBasedOnAccount(txns)
                 }
                 
             case .error(_), .completed: break

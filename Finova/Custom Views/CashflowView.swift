@@ -82,7 +82,7 @@
 //    CashflowView(cashflowType: .income)
 //}
 
-
+import SnapKit
 import UIKit
 
 class CashflowView: UIView {
@@ -92,7 +92,7 @@ class CashflowView: UIView {
     private let value = DynamicLabel(
         textColor: .white,
         font: UIFont.preferredFont(for: .title1, weight: .bold),
-        minimumScaleFactor: 0.65
+        minimumScaleFactor: 0.5
     )
 
     override init(frame: CGRect) {
@@ -113,23 +113,19 @@ class CashflowView: UIView {
         layer.cornerRadius = 30
         clipsToBounds = true
         backgroundColor = cashflowType.color
-        setContentCompressionResistancePriority(.required, for: .horizontal)
-        setContentHuggingPriority(.defaultLow, for: .horizontal)
 
         let hStack = UIStackView()
         hStack.axis = .horizontal
-//        hStack.backgroundColor = .red
-        hStack.spacing = 8
+        hStack.spacing = 16
         hStack.layoutMargins = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
         hStack.isLayoutMarginsRelativeArrangement = true
         hStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hStack)
-        NSLayoutConstraint.activate([
-            hStack.topAnchor.constraint(equalTo: topAnchor, constant: verticalPadding),
-            hStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: horizontalPadding),
-            hStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            hStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -verticalPadding)
-        ])
+        hStack.snp.makeConstraints { make in
+            make.verticalEdges.equalToSuperview().inset(verticalPadding)
+            make.leading.equalToSuperview().inset(horizontalPadding)
+            make.trailing.equalToSuperview().inset(-10)
+        }
         
         let cashflowImage = UIImageView(image: cashflowType.imageToUse)
         cashflowImage.contentMode = .scaleAspectFit
@@ -138,14 +134,10 @@ class CashflowView: UIView {
         cashflowImage.layer.backgroundColor = UIColor.white.cgColor
         cashflowImage.tintColor = cashflowType.color
         cashflowImage.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            cashflowImage.widthAnchor.constraint(equalToConstant: 40),
-            cashflowImage.heightAnchor.constraint(equalToConstant: 40),
-        ])
-        hStack.addArrangedSubviews(SpacerView(), cashflowImage, SpacerView())
+        cashflowImage.snp.makeConstraints { $0.size.equalTo(40) }
+        hStack.addArrangedSubview(cashflowImage)
         
         let vStack = UIStackView()
-//        vStack.backgroundColor = .blue
         vStack.axis = .vertical
         vStack.distribution = .fillEqually
         vStack.spacing = 4
@@ -162,10 +154,28 @@ class CashflowView: UIView {
     func update(newValue: String) {
 //        let cleanedValue = newValue < 0 ? -newValue : newValue
 //        value.text = "\(Locale.current.currencySymbol ?? "$")\(cleanedValue)"
-        DispatchQueue.main.async { self.value.text = newValue }
+        DispatchQueue.main.async {
+            self.value.text = newValue
+        }
     }
 }
 
 #Preview {
-    CashflowView(cashflowType: .credit)
+//    CashflowView(cashflowType: .credit)
+    
+    let incomeCashflowBadge = CashflowView(cashflowType: .credit)
+    let expensesCashflowBadge = CashflowView(cashflowType: .debit)
+    let cashflowStackView = UIStackView(frame: .zero)
+    cashflowStackView.axis = .horizontal
+    cashflowStackView.distribution = .fillEqually
+    cashflowStackView.alignment = .center
+    cashflowStackView.spacing = 30
+    cashflowStackView.translatesAutoresizingMaskIntoConstraints = false
+    cashflowStackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    cashflowStackView.isLayoutMarginsRelativeArrangement = true
+
+    cashflowStackView.addArrangedSubviews(incomeCashflowBadge, expensesCashflowBadge)
+    incomeCashflowBadge.widthAnchor.constraint(equalTo: expensesCashflowBadge.widthAnchor).isActive = true
+
+    return cashflowStackView
 }

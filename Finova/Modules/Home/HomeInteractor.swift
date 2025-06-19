@@ -15,8 +15,7 @@ protocol HomeInteractor: AnyObject {
     var upsertedTxns: Observable<Transaction?>? { get }
     
     func getAccounts() async -> [Account]
-    func fetchInitialTxns(onAccount: Account) async -> [TransactionCellViewModel]
-    func getTransactions() async -> [Transaction]
+    func getTransactionsOn(account: Account, frequency: Frequency) async -> [TransactionCellViewModel]
     func getPrdefinedTransactions() async -> [Transaction]
     func getTxnsFrom(account: Account) async -> [TransactionCellViewModel]
 }
@@ -49,20 +48,10 @@ class HomeInteractorImpl: HomeInteractor {
         return accounts
     }
     
-    func fetchInitialTxns(onAccount: Account) async -> [TransactionCellViewModel] {
-        let txns = await transactionService.fetchInitialTxns(onAccount: onAccount)
-        let mappedVm = txns.map { txn in
-            let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
-            return txn.convertToVm(formattedValue: formattedValue)
-        }
-        
-//        presenter?.updateTransactions(transactions: mappedVm)
-        return mappedVm
-    }
-    
-    func getTransactions() async -> [Transaction] {
-        let transactions = await transactionService.getTransactionsOn()
-        return transactions
+    func getTransactionsOn(account: Account, frequency: Frequency) async -> [TransactionCellViewModel] {
+        let txns = await transactionService.getTransactionsOn(account: account, frequency: frequency)
+        let parsedTxns = txns.map { $0.convertToVm() }
+        return parsedTxns
     }
     
     func getPrdefinedTransactions() async -> [Transaction] {

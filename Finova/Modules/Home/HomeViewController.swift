@@ -17,6 +17,7 @@ protocol HomeView: AnyObject {
     func updateTxnsBasedOnAccount(_ transactions: [TransactionCellViewModel])
     func updateCreditCashflowBadge(value: String)
     func updateDebitCashflowBadge(value: String)
+    func updateSelectedAccount(_ account: Account)
 }
 
 class HomeViewController: UIViewController, HomeView {
@@ -31,6 +32,7 @@ class HomeViewController: UIViewController, HomeView {
     private let accountMenuStackView = UIStackView(frame: .zero)
     private let accountBalance = DynamicLabel(textColor: .label, font: UIFont.preferredFont(for: .extraLargeTitle, weight: .bold))
     private let accountStackView = UIStackView(frame: .zero)
+    private let selectedAccountName = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .subheadline, weight: .semibold))
     private let incomeCashflowBadge = CashflowView(cashflowType: .credit)
     private let expensesCashflowBadge = CashflowView(cashflowType: .debit)
     private let recentTxnLabel = DynamicLabel(textColor: .black, font: UIFont.preferredFont(for: .title2, weight: .semibold))
@@ -158,8 +160,7 @@ class HomeViewController: UIViewController, HomeView {
         accountMenuStackView.axis = .horizontal
         accountMenuStackView.spacing = 4
         
-        let selectedAccountName = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .subheadline, weight: .semibold))
-        selectedAccountName.text = "Savings"
+//        selectedAccountName.text = "N/A"
         
         let chevron = UIImageView(image: UIImage(systemName: "chevron.down")?.withConfiguration(UIImage.SymbolConfiguration(scale: .small)))
         chevron.translatesAutoresizingMaskIntoConstraints = false
@@ -213,14 +214,14 @@ class HomeViewController: UIViewController, HomeView {
         let cashflowStackView = UIStackView(frame: .zero)
         cashflowStackView.axis = .horizontal
         cashflowStackView.alignment = .center
+        cashflowStackView.distribution = .fillEqually
         cashflowStackView.spacing = horizontalPadding
         cashflowStackView.translatesAutoresizingMaskIntoConstraints = false
         cashflowStackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         cashflowStackView.isLayoutMarginsRelativeArrangement = true
         accountStackView.addArrangedSubview(cashflowStackView)
         
-        cashflowStackView.addArrangedSubviews(incomeCashflowBadge, SpacerView(), expensesCashflowBadge)
-        incomeCashflowBadge.widthAnchor.constraint(equalTo: expensesCashflowBadge.widthAnchor).isActive = true
+        cashflowStackView.addArrangedSubviews(incomeCashflowBadge, expensesCashflowBadge)
     }
     
     private func configureRecentTxnLabel() {
@@ -229,8 +230,9 @@ class HomeViewController: UIViewController, HomeView {
     }
     
     private func configureFrequencySegmentedControl() {
-        _ = Frequency.allCases.enumerated().map { index, frequency in
-            frequencySegmentedControl.insertSegment(withTitle: frequency.rawValue, at: index, animated: true)
+        // Transfer this for loop in the presenter
+        for (index, frequency) in Frequency.allCases.enumerated() {
+            frequencySegmentedControl.insertSegment(withTitle: frequency.title, at: index, animated: true)
         }
         
         frequencySegmentedControl.selectedSegmentTintColor = UIColor.secondaryColor
@@ -301,7 +303,8 @@ class HomeViewController: UIViewController, HomeView {
 
 extension HomeViewController {
     @objc func frequencyDidChange(_ segmentedControl: UISegmentedControl) {
-//        segmentedControl.selectedSegmentIndex
+        let frequency = Frequency(rawValue: segmentedControl.selectedSegmentIndex) ?? .daily
+        Task { [weak self] in await self?.presenter?.getTransactionsOn(frequency: frequency) }
     }
     
     func updateTxns(_ transactions: [TransactionCellViewModel]) {
@@ -335,6 +338,10 @@ extension HomeViewController {
     
     func updateDebitCashflowBadge(value: String) {
         expensesCashflowBadge.update(newValue: value)
+    }
+    
+    func updateSelectedAccount(_ account: Account) {
+        DispatchQueue.main.async { self.selectedAccountName.text = account.name ?? "N/A" }
     }
 }
 

@@ -162,7 +162,7 @@ class AccountSummaryHeaderView: UIView {
     
     private func configureFrequencySegmentedControl() {
         _ = Frequency.allCases.enumerated().map { index, frequency in
-            frequencySegmentedControl.insertSegment(withTitle: frequency.rawValue, at: index, animated: true)
+            frequencySegmentedControl.insertSegment(withTitle: frequency.title, at: index, animated: true)
         }
         
         frequencySegmentedControl.selectedSegmentTintColor = UIColor.secondaryColor

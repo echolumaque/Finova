@@ -28,31 +28,22 @@ actor TransactionService {
         return testTransactions
     }
     
-    func getTransactionsOn(/*timePeriod: Frequency*/) async -> [Transaction] {
+    func getTransactionsOn(account: Account, frequency: Frequency) async -> [Transaction] {
         do {
             let fetchRequest = Transaction.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "date == %@", Date.now as NSDate)
-            let transactions = try await coreDataStack.performInMainContext { mainContext in
-                try mainContext.fetch(fetchRequest)
-            }
+//            fetchRequest.predicate = NSPredicate(format: "account == %@ && date >= %@ && date <= %@", account, Date.now as NSDate)
+            fetchRequest.predicate = NSPredicate(
+                format: "account == %@ AND date >= %@ AND date < %@",
+                argumentArray: [
+                    account,
+                    (frequency.interval?.start ?? .now) as NSDate,
+                    (frequency.interval?.end ?? .now) as NSDate
+                ]
+            )
             
+            let transactions = try await coreDataStack.performInMainContext { try $0.fetch(fetchRequest) }
             return transactions
         } catch {
-            return []
-        }
-    }
-    
-    func fetchInitialTxns(onAccount: Account) async -> [Transaction] {
-        do {
-            let txns = try await coreDataStack.performInMainContext { ctx in
-                let fetchRequest = Transaction.fetchRequest()
-                fetchRequest.predicate = NSPredicate(format: "account == %@", onAccount)
-                return try ctx.fetch(fetchRequest)
-            }
-            
-            return txns
-        } catch {
-            print("Error happened in fetchAllTxns: \(error)")
             return []
         }
     }
@@ -74,7 +65,8 @@ actor TransactionService {
                 } else {
                     txnInCtx = Transaction(context: bgContext)
                     txnInCtx.txnId = UUID()
-                    txnInCtx.date = .now
+//                    txnInCtx.date = .now
+                    txnInCtx.date = Date(year: 2024)
                 }
                 
                 txnInCtx.account = try bgContext.existingObject(with: account.objectID) as? Account
