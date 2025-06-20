@@ -32,6 +32,7 @@ class HomePresenterImpl: HomePresenter {
     private let disposeBag = DisposeBag()
     private lazy var numberFormatter = FormatterFactory.makeCurrencyFormatter()
     private var selectedAccount: Account?
+    private var selectedFrequency = Frequency.daily
     private let selectedAccountUpdatedSubject = PublishSubject<Account>()
     
     init() {
@@ -73,15 +74,16 @@ class HomePresenterImpl: HomePresenter {
     
     func getPrdefinedTransactions() async {
         let predefinedTransactions = await interactor?.getPrdefinedTransactions() ?? []
-        view?.updateTxns(predefinedTransactions.map { $0.convertToVm() })
+        updateTransactions(transactions: predefinedTransactions.map { $0.convertToVm() })
     }
     
     func getTransactionsOn(frequency: Frequency) async {
         guard let selectedAccount else { return }
-        let txns = await interactor?.getTransactionsOn(account: selectedAccount, frequency: frequency)
-        let abc = 1
+        
+        selectedFrequency = frequency
+        let txns = await interactor?.getTransactionsOn(account: selectedAccount, frequency: frequency) ?? []
+        onTxnsReCreated(txns: txns)
     }
-    
     
     private func generateInitialTxns(_ txns: [TransactionCellViewModel]) {
         for txn in txns {
@@ -99,6 +101,8 @@ class HomePresenterImpl: HomePresenter {
     
     private func updateTransactions(transactions: [TransactionCellViewModel]) {
         view?.updateTxns(transactions)
+        if transactions.isEmpty { view?.showContentUnavailableView() }
+        else { view?.hideContentUnavailableView() }
     }
     
     private func subscribeToAccountChanges() {
@@ -111,23 +115,10 @@ class HomePresenterImpl: HomePresenter {
                 Task { [weak self] in
                     guard let self else { return }
                     
-                    currentCredit = .zero
-                    currentDebit = .zero
-                    
-                    let txns = await interactor?.getTxnsFrom(account: account) ?? []
-                    for txn in txns {
-                        guard let cashflowType = txn.cashflowType?.decode(CashflowType.self) else { continue }
-                        switch cashflowType {
-                        case .credit: currentCredit += txn.value
-                        case .debit: currentDebit += txn.value
-                        }
-                    }
-                    
+                    let txns = await interactor?.getTransactionsOn(account: account, frequency: selectedFrequency) ?? []
                     view?.updateSelectedAccount(account)
                     view?.updateAvailableBalance(numberFormatter.string(from: NSNumber(value: account.value)) ?? "")
-                    view?.updateCreditCashflowBadge(value: numberFormatter.string(from: currentCredit as NSNumber) ?? "")
-                    view?.updateDebitCashflowBadge(value: numberFormatter.string(from: currentDebit as NSNumber) ?? "")
-                    view?.updateTxnsBasedOnAccount(txns)
+                    onTxnsReCreated(txns: txns)
                 }
                 
             case .error(_), .completed: break
@@ -183,5 +174,24 @@ class HomePresenterImpl: HomePresenter {
                 print("disposed here")
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func onTxnsReCreated(txns: [TransactionCellViewModel]) {
+        currentCredit = .zero
+        currentDebit = .zero
+        
+        for txn in txns {
+            guard let cashflowType = txn.cashflowType?.decode(CashflowType.self) else { continue }
+            switch cashflowType {
+            case .credit: currentCredit += txn.value
+            case .debit: currentDebit += txn.value
+            }
+        }
+        
+        view?.updateCreditCashflowBadge(value: numberFormatter.string(from: currentCredit as NSNumber) ?? "")
+        view?.updateDebitCashflowBadge(value: numberFormatter.string(from: currentDebit as NSNumber) ?? "")
+        view?.createNewTxns(txns)
+        if txns.isEmpty { view?.showContentUnavailableView() }
+        else { view?.hideContentUnavailableView() }
     }
 }

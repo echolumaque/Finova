@@ -113,18 +113,18 @@ class CashflowView: UIView {
         layer.cornerRadius = 30
         clipsToBounds = true
         backgroundColor = cashflowType.color
-
+        
         let hStack = UIStackView()
+//        hStack.backgroundColor = .green
         hStack.axis = .horizontal
         hStack.spacing = 16
-        hStack.layoutMargins = UIEdgeInsets(top: 14, left: 0, bottom: 14, right: 0)
+        hStack.layoutMargins = UIEdgeInsets(top: 14, left: 14, bottom: 14, right: 0)
         hStack.isLayoutMarginsRelativeArrangement = true
         hStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hStack)
         hStack.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview().inset(verticalPadding)
-            make.leading.equalToSuperview().inset(horizontalPadding)
-            make.trailing.equalToSuperview().inset(-10)
+            make.horizontalEdges.equalToSuperview()
         }
         
         let cashflowImage = UIImageView(image: cashflowType.imageToUse)
@@ -175,7 +175,7 @@ class CashflowView: UIView {
     cashflowStackView.isLayoutMarginsRelativeArrangement = true
 
     cashflowStackView.addArrangedSubviews(incomeCashflowBadge, expensesCashflowBadge)
-    incomeCashflowBadge.widthAnchor.constraint(equalTo: expensesCashflowBadge.widthAnchor).isActive = true
+//    incomeCashflowBadge.widthAnchor.constraint(equalTo: expensesCashflowBadge.widthAnchor).isActive = true
 
     return cashflowStackView
 }

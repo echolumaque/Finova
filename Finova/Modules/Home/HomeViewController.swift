@@ -14,10 +14,12 @@ protocol HomeView: AnyObject {
     var presenter: HomePresenter? { get set }
     func updateAvailableBalance(_ balance: String)
     func updateTxns(_ transactions: [TransactionCellViewModel])
-    func updateTxnsBasedOnAccount(_ transactions: [TransactionCellViewModel])
+    func createNewTxns(_ transactions: [TransactionCellViewModel])
     func updateCreditCashflowBadge(value: String)
     func updateDebitCashflowBadge(value: String)
     func updateSelectedAccount(_ account: Account)
+    func showContentUnavailableView()
+    func hideContentUnavailableView()
 }
 
 class HomeViewController: UIViewController, HomeView {
@@ -47,6 +49,8 @@ class HomeViewController: UIViewController, HomeView {
         )
     )
     private var txnDataSource: UICollectionViewDiffableDataSource<Section, TransactionCellViewModel>!
+    private let gapGuide = UILayoutGuide()
+    private let contentUnavailableStackView = UIStackView(frame: .zero)
     
     init(container: Resolver) {
         self.container = container
@@ -65,7 +69,8 @@ class HomeViewController: UIViewController, HomeView {
         configureHeaderView()
         configureTxnCollectionView()
         configureCashflowInsertView()
-        
+        configureContentUnavailableView()
+
         Task { [weak self] in await self?.presenter?.didLoad() }
     }
     
@@ -217,10 +222,9 @@ class HomeViewController: UIViewController, HomeView {
         cashflowStackView.distribution = .fillEqually
         cashflowStackView.spacing = horizontalPadding
         cashflowStackView.translatesAutoresizingMaskIntoConstraints = false
-        cashflowStackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        cashflowStackView.isLayoutMarginsRelativeArrangement = true
-        accountStackView.addArrangedSubview(cashflowStackView)
         
+        accountStackView.addArrangedSubview(cashflowStackView)
+        cashflowStackView.snp.makeConstraints { $0.horizontalEdges.equalToSuperview() }
         cashflowStackView.addArrangedSubviews(incomeCashflowBadge, expensesCashflowBadge)
     }
     
@@ -299,6 +303,34 @@ class HomeViewController: UIViewController, HomeView {
             make.size.equalTo(50)
         }
     }
+    
+    private func configureContentUnavailableView() {
+        view.addLayoutGuide(gapGuide)
+        gapGuide.snp.makeConstraints { make in
+            make.top.equalTo(frequencySegmentedControl.snp.bottom)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            make.centerX.equalToSuperview()
+        }
+        
+        contentUnavailableStackView.axis = .vertical
+        contentUnavailableStackView.alignment = .center
+        contentUnavailableStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let image = UIImageView(image: UIImage(resource: .customDollarsignBankBuildingSlashFill))
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.tintColor = .secondaryLabel
+        image.snp.makeConstraints { $0.size.equalTo(65) }
+        
+        let text = DynamicLabel(font: UIFont.preferredFont(for: .title2, weight: .bold))
+        text.text = "No transactions"
+        
+        let secondaryText = DynamicLabel(textColor: .secondaryLabel, font: UIFont.preferredFont(for: .subheadline, weight: .regular))
+        secondaryText.text = "There are no recent transactions found."
+        
+        contentUnavailableStackView.addArrangedSubviews(image, text, secondaryText)
+        contentUnavailableStackView.setCustomSpacing(15, after: image)
+        contentUnavailableStackView.setCustomSpacing(5, after: text)
+    }
 }
 
 extension HomeViewController {
@@ -319,7 +351,7 @@ extension HomeViewController {
         }
     }
     
-    func updateTxnsBasedOnAccount(_ transactions: [TransactionCellViewModel]) {
+    func createNewTxns(_ transactions: [TransactionCellViewModel]) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, TransactionCellViewModel>()
         snapshot.appendSections([.main])
         snapshot.appendItems(transactions)
@@ -342,6 +374,25 @@ extension HomeViewController {
     
     func updateSelectedAccount(_ account: Account) {
         DispatchQueue.main.async { self.selectedAccountName.text = account.name ?? "N/A" }
+    }
+    
+    func showContentUnavailableView() {
+        DispatchQueue.main.async {
+            guard self.contentUnavailableStackView.superview == nil else { return }
+            
+            self.view.addSubview(self.contentUnavailableStackView)
+            self.contentUnavailableStackView.snp.makeConstraints { $0.center.equalTo(self.gapGuide.snp.center) }
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    func hideContentUnavailableView() {
+        DispatchQueue.main.async {
+            guard self.contentUnavailableStackView.superview != nil else { return }
+            
+            self.contentUnavailableStackView.removeFromSuperview()
+            self.view.layoutIfNeeded()
+        }
     }
 }
 

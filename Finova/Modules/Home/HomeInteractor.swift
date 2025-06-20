@@ -17,7 +17,7 @@ protocol HomeInteractor: AnyObject {
     func getAccounts() async -> [Account]
     func getTransactionsOn(account: Account, frequency: Frequency) async -> [TransactionCellViewModel]
     func getPrdefinedTransactions() async -> [Transaction]
-    func getTxnsFrom(account: Account) async -> [TransactionCellViewModel]
+//    func getTxnsFrom(account: Account) async -> [TransactionCellViewModel]
 }
 
 class HomeInteractorImpl: HomeInteractor {
@@ -50,7 +50,11 @@ class HomeInteractorImpl: HomeInteractor {
     
     func getTransactionsOn(account: Account, frequency: Frequency) async -> [TransactionCellViewModel] {
         let txns = await transactionService.getTransactionsOn(account: account, frequency: frequency)
-        let parsedTxns = txns.map { $0.convertToVm() }
+        let parsedTxns = txns.map { txn in
+            let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
+            return txn.convertToVm(formattedValue: formattedValue)
+        }
+        
         return parsedTxns
     }
     
@@ -59,15 +63,15 @@ class HomeInteractorImpl: HomeInteractor {
         return predefinedTransactions
     }
     
-    func getTxnsFrom(account: Account) async -> [TransactionCellViewModel] {
-        let txns = await accountService.getTxnsFrom(account: account)
-        let parsedTxns = txns.map { txn in
-            let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
-            return txn.convertToVm(formattedValue: formattedValue)
-        }
-        
-        return parsedTxns
-    }
+//    func getTxnsFrom(account: Account) async -> [TransactionCellViewModel] {
+//        let txns = await accountService.getTxnsFrom(account: account)
+//        let parsedTxns = txns.map { txn in
+//            let formattedValue = "\(numberFormatter.string(from: NSNumber(floatLiteral: txn.value)) ?? "0")"
+//            return txn.convertToVm(formattedValue: formattedValue)
+//        }
+//        
+//        return parsedTxns
+//    }
     
     private func subscribeToAccountUpdates() {
         Task {

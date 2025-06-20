@@ -44,6 +44,7 @@ actor TransactionService {
             let transactions = try await coreDataStack.performInMainContext { try $0.fetch(fetchRequest) }
             return transactions
         } catch {
+            print(error)
             return []
         }
     }
